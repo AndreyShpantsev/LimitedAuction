@@ -1,0 +1,130 @@
+﻿@using DataAccessLogic.DatabaseModels;
+@using DataAccessLogic.HelperServices;
+
+@model WebApplicationTechSale.Models.PersonalAccountViewModel
+
+@{
+    ViewData["Title"] = "Список лотов";
+}
+
+@addTagHelper *, WebApplicationTechSale
+
+<div class="row justify-content-center my-lg-2 pt-lg-3">
+    <div class="col-lg-5 col-xl-4 mb-2">
+        <h5 class="mb-4">Управление учетной записью:</h5>
+        @if (User.IsInRole("regular user"))
+        {
+            <p>
+                <a asp-action="Update" asp-controller="Account" class="btn btn-lg btn-dark d-block rounded-0">Изменить учетные данные</a>
+            </p>
+        }
+        <p>
+            <a asp-action="ChangePassword" asp-controller="Account" class="btn btn-lg btn-dark d-block rounded-0">Изменить пароль</a>
+        </p>
+        <form method="post" asp-action="Logout" asp-controller="Account">
+            <div class="d-grid">
+                <button type="submit" class="btn btn-lg btn-danger rounded-0">Выйти из учетной записи</button>
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-7 col-xl-8 mb-2">
+        <h5 class="mb-4 mt-4 mt-lg-0">Данные учетной записи:</h5>
+        <div class="row mt-2">
+            <div class="col-md-4 col-lg-5 d-flex align-items-center">
+                <h6>Имя пользователя</h6>
+            </div>
+            <div class="col-md-8 col-lg-7">
+                <input class="form-control form-control-lg rounded-0" type="text" placeholder="@Model.UserName" disabled>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-5 col-lg-6 col-xl-5 d-flex align-items-center">
+                <h6>Адрес электронной почты</h6>
+            </div>
+            <div class="col-md-7 col-lg-6 col-xl-7">
+                <input class="form-control form-control-lg rounded-0" type="text" placeholder="@Model.Email" disabled>
+            </div>
+        </div>
+        @if (User.IsInRole("regular user"))
+        {
+            <div class="row mt-3">
+                <div class="col-md-5 col-lg-6 col-xl-5 d-flex align-items-center">
+                    <h6>Идентификатор в Telegram</h6>
+                </div>
+                <div class="col-md-7 col-lg-6 col-xl-7">
+                    <input class="form-control form-control-lg rounded-0" type="text" placeholder="@Model.TelegramId" disabled>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@if (Model.PersonalLotsList.AuctionLots.Count() > 0)
+{
+    <div class="row justify-content-center my-2">
+        <div class="col">
+            <h5>Список лотов:</h5>
+        </div>
+    </div>
+    <div class="row justify-content-center my-2">
+        <div class="col-md-6 col-lg-4">
+            <p>
+                <a asp-action="CreateLot" asp-controller="User" class="btn btn-lg btn-dark d-block rounded-0">+ Новый лот</a>
+            </p>
+        </div>
+    </div>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (AuctionLot auctionLot in Model.PersonalLotsList.AuctionLots)
+        {
+            if (auctionLot.Status == LotStatusProvider.GetAcceptedStatus())
+            {
+                await Html.RenderPartialAsync("AcceptedLot", auctionLot);
+            }
+            if (auctionLot.Status == LotStatusProvider.GetOnModerationStatus())
+            {
+                await Html.RenderPartialAsync("LotOnModeration", auctionLot);
+            }
+            if (auctionLot.Status == LotStatusProvider.GetRejectedStatus())
+            {
+                await Html.RenderPartialAsync("RejectedLot", auctionLot);
+            }
+        }
+    </div>
+    <pagination page-model="@Model.PersonalLotsList.PageViewModel" page-action="Personal" page-controller="Account"></pagination>
+}
+else if (User.IsInRole("regular user"))
+{
+    <div class="row justify-content-center my-2">
+        <div class="col-md-6 col-lg-4">
+            <p>
+                <a asp-action="CreateLot" asp-controller="User" class="btn btn-lg btn-dark d-block rounded-0">Создайте свой первый лот</a>
+            </p>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        let lotTimeIntervals = new Array();
+
+        let activeLots = document.querySelectorAll(".active-lot");
+
+        for (let i = 0; i < activeLots.length; i++) {
+            lotTimeIntervals[i] = (Number)(activeLots[i].innerHTML);
+        }
+
+        function Timer() {
+            for (let i = 0; i < activeLots.length; i++) {
+                console.log(activeLots[i].innerHTML);
+                let hoursLeft = Math.round(lotTimeIntervals[i] / 3600);
+                let minutesLeft = Math.round((lotTimeIntervals[i] / 60) % 60);
+                activeLots[i].innerHTML = hoursLeft + " ч. " + minutesLeft + " мин.";
+                lotTimeIntervals[i]--;
+                if (lotTimeIntervals[i] == 0) {
+                    window.location.reload();
+                }
+            }
+        }
+        Timer();
+        setInterval(Timer, 1000);
+    </script>
+}

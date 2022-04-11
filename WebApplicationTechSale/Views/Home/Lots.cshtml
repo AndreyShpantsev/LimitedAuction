@@ -1,0 +1,59 @@
+﻿@using DataAccessLogic.DatabaseModels;
+
+@model AuctionLotsViewModel
+
+@{
+    ViewData["Title"] = "Список лотов";
+}
+
+@addTagHelper *, WebApplicationTechSale
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 my-lg-2">
+    @foreach (AuctionLot auctionLot in Model.AuctionLots)
+    {
+        @if (DateTime.Now > auctionLot.StartDate && DateTime.Now < auctionLot.EndDate)
+        {
+            await Html.RenderPartialAsync("ActiveLot", auctionLot);
+        }
+        else if (DateTime.Now < auctionLot.StartDate)
+        {
+            await Html.RenderPartialAsync("NotStartedLot", auctionLot);
+        }
+        else
+        {
+            await Html.RenderPartialAsync("EndedLot", auctionLot);
+        }
+    }
+</div>
+
+@if (Model.AuctionLots.Count() > 0)
+{
+    <pagination page-model="@Model.PageViewModel" page-action="Lots" page-controller="Home"></pagination>
+}
+
+@section Scripts {
+    <script>
+        let lotTimeIntervals = new Array();
+
+        let activeLots = document.querySelectorAll(".active-lot");
+
+        for (let i = 0; i < activeLots.length; i++) {
+            lotTimeIntervals[i] = (Number)(activeLots[i].innerHTML);
+        }
+
+        function Timer() {
+            for (let i = 0; i < activeLots.length; i++) {
+                console.log(activeLots[i].innerHTML);
+                let hoursLeft = Math.round(lotTimeIntervals[i] / 3600); 
+                let minutesLeft = Math.round((lotTimeIntervals[i] / 60) % 60);
+                activeLots[i].innerHTML = hoursLeft + " ч. " + minutesLeft + " мин.";
+                lotTimeIntervals[i]--;
+                if (lotTimeIntervals[i] == 0) {
+                    window.location.reload();
+                }
+            }
+        }
+        Timer();
+        setInterval(Timer, 1000);
+    </script>
+}

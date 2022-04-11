@@ -1,0 +1,19 @@
+﻿@using DataAccessLogic.DatabaseModels;
+
+@model SavedList
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 my-lg-2">
+    @foreach (AuctionLot auctionLot in Model.AuctionLots)
+    {
+        <div class="col">
+            <div class="card h-100 rounded-0">
+                <a><img src="@auctionLot.PhotoSrc" class="card-img-top list-lot rounded-0" alt="..."></a>
+                <div class="card-body">
+                    <a class="auction-link" asp-action="OpenLot" asp-controller="User" asp-route-id="@auctionLot.Id">
+                        <h5 class="card-title">@auctionLot.Name</h5>
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

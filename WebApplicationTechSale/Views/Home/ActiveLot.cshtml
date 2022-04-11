@@ -1,0 +1,20 @@
+﻿@using DataAccessLogic.DatabaseModels
+
+@model AuctionLot
+
+<div class="col">
+    <div class="card h-100 rounded-0">
+        <img src="@Model.PhotoSrc" class="card-img-top list-lot rounded-0" alt="...">
+        <div class="card-body">
+            <a class="auction-link" asp-action="OpenLot" asp-controller="User" asp-route-id="@Model.Id">
+                <h5 class="card-title">@Model.Name</h5>
+            </a>
+            <p class="card-text text-wrap">@Model.Description</p>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><b>До конца: </b><span class="active-lot">@Math.Round((Model.EndDate - DateTime.Now).TotalSeconds)</span></li>
+                <li class="list-group-item"><b>Текущая цена: </b>@Model.PriceInfo.CurrentPrice руб.</li>
+                <li class="list-group-item"><b>Продавец: </b>@Model.User.UserName</li>
+            </ul>
+        </div>
+    </div>
+</div>
