@@ -118,6 +118,29 @@ namespace DataAccessLogic.Migrations
                     b.ToTable("Notes");
                 });
 
+            modelBuilder.Entity("DataAccessLogic.DatabaseModels.Order", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AuctionLotId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuctionLotId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders");
+                });
+
             modelBuilder.Entity("DataAccessLogic.DatabaseModels.SavedList", b =>
                 {
                     b.Property<string>("Id")
@@ -407,6 +430,21 @@ namespace DataAccessLogic.Migrations
                         .HasForeignKey("DataAccessLogic.DatabaseModels.Note", "AuctionLotId");
 
                     b.Navigation("AuctionLot");
+                });
+
+            modelBuilder.Entity("DataAccessLogic.DatabaseModels.Order", b =>
+                {
+                    b.HasOne("DataAccessLogic.DatabaseModels.AuctionLot", "AuctionLot")
+                        .WithMany()
+                        .HasForeignKey("AuctionLotId");
+
+                    b.HasOne("DataAccessLogic.DatabaseModels.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("AuctionLot");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DataAccessLogic.DatabaseModels.SavedList", b =>

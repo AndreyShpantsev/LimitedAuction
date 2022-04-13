@@ -17,6 +17,9 @@
             <p>
                 <a asp-action="Update" asp-controller="Account" class="btn btn-lg btn-dark d-block rounded-0">Изменить учетные данные</a>
             </p>
+            <p>
+                <a asp-action="MyOrders" asp-controller="Account" class="btn btn-lg btn-dark d-block rounded-0">Мои покупки</a>
+            </p>
         }
         <p>
             <a asp-action="ChangePassword" asp-controller="Account" class="btn btn-lg btn-dark d-block rounded-0">Изменить пароль</a>
@@ -86,6 +89,10 @@
             if (auctionLot.Status == LotStatusProvider.GetRejectedStatus())
             {
                 await Html.RenderPartialAsync("RejectedLot", auctionLot);
+            }
+            if (auctionLot.Status == LotStatusProvider.GetSoldStatus())
+            {
+                await Html.RenderPartialAsync("SoldAntiques", auctionLot);
             }
         }
     </div>

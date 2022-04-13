@@ -1,4 +1,5 @@
 ﻿@using DataAccessLogic.DatabaseModels;
+@using DataAccessLogic.HelperServices;
 
 @model AuctionLot
 
@@ -6,7 +7,7 @@
     <div class="col-lg-10 col-xl-9 d-flex align-items-center">
         <div class="h4 my-0 py-3">@Model.Name</div>
     </div>
-    @if (User.Identity.Name != Model.User.UserName)
+    @if (User.Identity.Name != Model.User.UserName && Model.Status != LotStatusProvider.GetSoldStatus())
     {
         if (ViewBag.IsSaved)
         {
@@ -38,7 +39,7 @@
     </div>
 </div>
 <div class="row justify-content-center mt-4">
-    <div class="col-lg-6 col-xl-6">
+    <div class="col-lg-6 col-xl-5">
         <div class="row mb-4 mb-xl-0 h-100">
             @if (DateTime.Now < Model.StartDate)
             {
@@ -79,12 +80,19 @@
             <a class="btn btn-lg btn-dark rounded-0 d-block">Редактировать</a>
         </div>
     }
-    else if (DateTime.Now > Model.StartDate && DateTime.Now < Model.EndDate && User.Identity.Name != Model.User.UserName)
+    else if (DateTime.Now > Model.StartDate && DateTime.Now < Model.EndDate && User.Identity.Name != Model.User.UserName && Model.Status != LotStatusProvider.GetSoldStatus())
     {
-        <div class="col-lg-4 col-xl-3">
+        <div class="col-lg-4 col-xl-2">
             <form method="post" asp-action="PlaceBid" asp-controller="User" asp-route-lotId="@Model.Id">
                 <div class="d-grid">
                     <button type="submit" class="btn btn-lg btn-dark rounded-0">Ставка +@Model.PriceInfo.BidStep</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-4 col-xl-2">
+            <form method="post" asp-action="CreateOrder" asp-controller="User" asp-route-antiquesId="@Model.Id">
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-lg btn-dark rounded-0">Купить</button>
                 </div>
             </form>
         </div>

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessLogic.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20201225084115_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20220412124847_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -118,6 +118,29 @@ namespace DataAccessLogic.Migrations
                         .HasFilter("[AuctionLotId] IS NOT NULL");
 
                     b.ToTable("Notes");
+                });
+
+            modelBuilder.Entity("DataAccessLogic.DatabaseModels.Order", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AuctionLotId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuctionLotId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("DataAccessLogic.DatabaseModels.SavedList", b =>
@@ -409,6 +432,21 @@ namespace DataAccessLogic.Migrations
                         .HasForeignKey("DataAccessLogic.DatabaseModels.Note", "AuctionLotId");
 
                     b.Navigation("AuctionLot");
+                });
+
+            modelBuilder.Entity("DataAccessLogic.DatabaseModels.Order", b =>
+                {
+                    b.HasOne("DataAccessLogic.DatabaseModels.AuctionLot", "AuctionLot")
+                        .WithMany()
+                        .HasForeignKey("AuctionLotId");
+
+                    b.HasOne("DataAccessLogic.DatabaseModels.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("AuctionLot");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DataAccessLogic.DatabaseModels.SavedList", b =>

@@ -25,10 +25,11 @@ namespace WebApplicationTechSale.Controllers
         private readonly ISavedLogic savedListLogic;
         private readonly UserManager<User> userManager;
         private readonly IBot telegramBot;
+        private readonly ICrudLogic<Order> orderLogic;
 
         public UserController(ICrudLogic<AuctionLot> lotLogic, IWebHostEnvironment environment,
             UserManager<User> userManager, ICrudLogic<Bid> bidLogic, ISavedLogic savedListLogic,
-            IBot telegramBot)
+            IBot telegramBot, ICrudLogic<Order> orderLogic)
         {
             this.lotLogic = lotLogic;
             this.environment = environment;
@@ -36,6 +37,7 @@ namespace WebApplicationTechSale.Controllers
             this.bidLogic = bidLogic;
             this.savedListLogic = savedListLogic;
             this.telegramBot = telegramBot;
+            this.orderLogic = orderLogic;
         }
 
         [HttpGet]
@@ -208,8 +210,25 @@ namespace WebApplicationTechSale.Controllers
             {
                 await telegramBot.SendMessage(
                     $"Новая ставка в лоте '{auctionLot.Name}', " +
-                    $"текущая цена {auctionLot.PriceInfo.CurrentPrice}", 
+                    $"текущая цена {auctionLot.PriceInfo.CurrentPrice}",
                     user.TelegramChatId);
+            }
+        }
+
+        private async Task SendBuyNotifications(string lotId)
+        {
+            AuctionLot auctionLot = (await lotLogic.Read(new AuctionLot
+            {
+                Id = lotId
+            })).First();
+
+            if (auctionLot.User != null
+            && !string.IsNullOrEmpty(auctionLot.User.TelegramChatId))
+            {
+                await telegramBot.SendMessage(
+                    $"Ваш антиквариат '{auctionLot.Name}', " + $"продан" +
+                    $"по цене {auctionLot.PriceInfo.CurrentPrice}",
+                    auctionLot.User.TelegramChatId);
             }
         }
 
@@ -356,6 +375,26 @@ namespace WebApplicationTechSale.Controllers
                 });
             }
             return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateOrder(string lotId)
+        {
+            await orderLogic.Create(new Order
+            {
+                AuctionLotId = lotId,
+                UserName = User.Identity.Name
+            });
+
+            await SendBuyNotifications(lotId);
+
+            return View("Redirect", new RedirectModel
+            {
+                InfoMessages = RedirectionMessageProvider.OrderCreateMessage(),
+                RedirectUrl = "/Account/MyOrders",
+                SecondsToRedirect = ApplicationConstantsProvider.GetShortRedirectionTime()
+            });
         }
     }
 }

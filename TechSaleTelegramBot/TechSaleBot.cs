@@ -1,6 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Telegram.Bot;
-using Telegram.Bot.Args;
+using Telegram.Bot.Extensions.Polling;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace TechSaleTelegramBot
 {
@@ -13,8 +17,19 @@ namespace TechSaleTelegramBot
         public TechSaleBot(string token)
         {
             telegramBot = new TelegramBotClient(token);
-            telegramBot.OnMessage += Bot_OnMessage;
-            telegramBot.StartReceiving();
+
+            var receiverOptions = new ReceiverOptions
+            {
+                AllowedUpdates = new UpdateType[]
+                {
+                    UpdateType.Message
+                }
+            };
+
+            telegramBot.StartReceiving(
+                HandleUpdateAsync,
+                HandleErrorAsync,
+                receiverOptions);
         }
 
         public async Task SendMessage(string msg, string chatId)
@@ -22,15 +37,25 @@ namespace TechSaleTelegramBot
             await telegramBot.SendTextMessageAsync(chatId, msg);
         }
 
-        private async void Bot_OnMessage(object sender, MessageEventArgs e)
+        async Task HandleUpdateAsync(
+            ITelegramBotClient botClient,
+            Update update,
+            CancellationToken cancellationToken
+        )
         {
-            if (e.Message.Text.Contains(@"/start"))
-            {
-                if (Host != null)
-                {
-                    await Host.RespondToMessage(e.Message.Chat.Id.ToString(), e.Message.From.Username);
-                }
-            }
+            if (update.Message!.Type != MessageType.Text)
+                return;
+
+            await Host.RespondToMessage(update.Message.Chat.Id.ToString(), update.Message.From.Username);
+        }
+
+        Task HandleErrorAsync(
+            ITelegramBotClient botClient,
+            Exception exception,
+            CancellationToken cancellationToken
+        )
+        {
+            return Task.CompletedTask;
         }
     }
 }

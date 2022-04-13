@@ -16,5 +16,10 @@
         {
             return "Размещён";
         }
+
+        public static string GetSoldStatus()
+        {
+            return "Продан";
+        }
     }
 }

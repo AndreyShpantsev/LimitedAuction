@@ -82,5 +82,14 @@ namespace WebApplicationTechSale.HelperServices
                 "Сейчас вы будете перенаправлены на страницу лота"
             };
         }
+
+        public static List<string> OrderCreateMessage()
+        {
+            return new List<string>()
+            {
+                "Поздравляем с покупкой!!!",
+                "Сейчас вы будете перенаправлены на страницу со списком Ваших покупок"
+            };
+        }
     }
 }

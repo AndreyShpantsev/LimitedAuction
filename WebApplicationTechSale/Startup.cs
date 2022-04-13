@@ -37,6 +37,7 @@ namespace WebApplicationTechSale
             services.AddTransient<IPagination<AuctionLot>, AuctionLotLogic>();
             services.AddSingleton<IBot, TechSaleBot>(bot => new TechSaleBot(Configuration["BotTokenAzure"]));
             services.AddHostedService<BotHostService>();
+            services.AddTransient<ICrudLogic<Order>, OrderLogic>();
 
             services.AddIdentity<User, IdentityRole>(options => 
             {
