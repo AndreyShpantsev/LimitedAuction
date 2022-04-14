@@ -13,6 +13,7 @@
             <ul class="list-group list-group-flush">
                 <li class="list-group-item"><b>До конца: </b><span class="active-lot">@Math.Round((Model.EndDate - DateTime.Now).TotalSeconds)</span></li>
                 <li class="list-group-item"><b>Текущая цена: </b>@Model.PriceInfo.CurrentPrice руб.</li>
+                <li class="list-group-item"><b>Конечная цена: </b>@Model.PriceInfo.FinalPrice руб.</li>
                 <li class="list-group-item"><b>Продавец: </b>@Model.User.UserName</li>
             </ul>
         </div>

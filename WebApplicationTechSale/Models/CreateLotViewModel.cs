@@ -34,6 +34,11 @@ namespace WebApplicationTechSale.Models
         [Required(ErrorMessage = "Укажите шаг ставки")]
         public int? BidStep { get; set; }
 
+        [Display(Name = "Конечная цена")]
+        [Range(100, 1000000, ErrorMessage = "Укажите цену, за которую готовы отдать товар без торгов")]
+        [Required(ErrorMessage = "Цена не должна быть меньше стартовой")]
+        public int? FinalPrice { get; set; } 
+
         [Display(Name = "Дата начала торгов")]
         [Required(ErrorMessage = "Укажите дату начала торгов")]
         [DataType(DataType.Date)]

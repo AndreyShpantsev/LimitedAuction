@@ -90,9 +90,9 @@
             </form>
         </div>
         <div class="col-lg-4 col-xl-2">
-            <form method="post" asp-action="CreateOrder" asp-controller="User" asp-route-antiquesId="@Model.Id">
+            <form method="post" asp-action="CreateOrder" asp-controller="User" asp-route-lotId="@Model.Id">
                 <div class="d-grid">
-                    <button type="submit" class="btn btn-lg btn-dark rounded-0">Купить</button>
+                    <button id="buy" type="submit" class="btn btn-lg btn-dark rounded-0">Купить @Model.PriceInfo.FinalPrice</button>
                 </div>
             </form>
         </div>

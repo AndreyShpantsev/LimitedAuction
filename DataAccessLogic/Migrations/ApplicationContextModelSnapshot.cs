@@ -392,6 +392,9 @@ namespace DataAccessLogic.Migrations
                             b1.Property<int>("CurrentPrice")
                                 .HasColumnType("int");
 
+                            b1.Property<int>("FinalPrice")
+                                .HasColumnType("int");
+
                             b1.Property<int>("StartPrice")
                                 .HasColumnType("int");
 

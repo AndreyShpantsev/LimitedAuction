@@ -92,7 +92,7 @@
             }
             if (auctionLot.Status == LotStatusProvider.GetSoldStatus())
             {
-                await Html.RenderPartialAsync("SoldAntiques", auctionLot);
+                await Html.RenderPartialAsync("SoldLot", auctionLot);
             }
         }
     </div>

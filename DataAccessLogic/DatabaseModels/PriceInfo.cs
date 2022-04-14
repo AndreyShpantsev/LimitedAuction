@@ -12,5 +12,7 @@ namespace DataAccessLogic.DatabaseModels
         public int CurrentPrice { get; set; }
         [Required(ErrorMessage = "Укажите шаг ставки")]
         public int BidStep { get; set; }
+        [Required(ErrorMessage = "Укажите конечную цену, за которую готовы отдать товар без торгов")]
+        public int FinalPrice { get; set; }
     }
 }

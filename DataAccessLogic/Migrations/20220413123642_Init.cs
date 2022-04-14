@@ -168,6 +168,7 @@ namespace DataAccessLogic.Migrations
                     PriceInfo_StartPrice = table.Column<int>(type: "int", nullable: true),
                     PriceInfo_CurrentPrice = table.Column<int>(type: "int", nullable: true),
                     PriceInfo_BidStep = table.Column<int>(type: "int", nullable: true),
+                    PriceInfo_FinalPrice = table.Column<int>(type: "int", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>

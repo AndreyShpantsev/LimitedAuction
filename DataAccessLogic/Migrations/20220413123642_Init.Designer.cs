@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessLogic.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20220412124847_Init")]
+    [Migration("20220413123642_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -392,6 +392,9 @@ namespace DataAccessLogic.Migrations
                                 .HasColumnType("int");
 
                             b1.Property<int>("CurrentPrice")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("FinalPrice")
                                 .HasColumnType("int");
 
                             b1.Property<int>("StartPrice")

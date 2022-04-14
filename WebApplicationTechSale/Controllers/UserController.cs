@@ -66,7 +66,8 @@ namespace WebApplicationTechSale.Controllers
                     {
                         StartPrice = model.StartPrice.Value,
                         CurrentPrice = model.StartPrice.Value,
-                        BidStep = model.BidStep.Value
+                        BidStep = model.BidStep.Value,
+                        FinalPrice = model.FinalPrice.Value
                     }
                 };
 
@@ -226,7 +227,7 @@ namespace WebApplicationTechSale.Controllers
             && !string.IsNullOrEmpty(auctionLot.User.TelegramChatId))
             {
                 await telegramBot.SendMessage(
-                    $"Ваш антиквариат '{auctionLot.Name}', " + $"продан" +
+                    $"Ваш антиквариат '{auctionLot.Name}', " + $"продан " +
                     $"по цене {auctionLot.PriceInfo.CurrentPrice}",
                     auctionLot.User.TelegramChatId);
             }
@@ -299,6 +300,7 @@ namespace WebApplicationTechSale.Controllers
                         StartDate = lotToEdit.StartDate,
                         EndDate = lotToEdit.EndDate,
                         StartPrice = lotToEdit.PriceInfo.StartPrice,
+                        FinalPrice = lotToEdit.PriceInfo.FinalPrice,
                         OldPhotoSrc = lotToEdit.PhotoSrc
                     });
                 }
@@ -332,7 +334,8 @@ namespace WebApplicationTechSale.Controllers
                     PriceInfo = new PriceInfo
                     {
                         StartPrice = model.StartPrice.Value,
-                        BidStep = model.BidStep.Value
+                        BidStep = model.BidStep.Value,
+                        FinalPrice = model.FinalPrice.Value,
                     }
                 };
 
