@@ -11,6 +11,8 @@ namespace DataAccessLogic
         public DbSet<Note> Notes { get; set; }
         public DbSet<SavedList> SavedLists { get; set; }
         public DbSet<Order> Orders { get; set; } 
+        public DbSet<Account> Accounts { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
 
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options)

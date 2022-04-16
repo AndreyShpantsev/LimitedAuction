@@ -8,6 +8,7 @@ namespace DataAccessLogic.DatabaseModels
         public string TelegramUsername { get; set; }
         public string TelegramChatId { get; set; }
         public SavedList SavedList { get; set; }
+        public Account Account { get; set; }
         public List<Bid> Bids { get; set; }
         public List<AuctionLot> AuctionLots { get; set; }
     }

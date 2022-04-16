@@ -1,4 +1,6 @@
+using DataAccessLogic.CrudLogic;
 using DataAccessLogic.DatabaseModels;
+using DataAccessLogic.Interfaces;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -25,10 +27,11 @@ namespace WebApplicationTechSale
                 {
                     var userManager = provider.GetRequiredService<UserManager<User>>();
                     var roleManager = provider.GetRequiredService<RoleManager<IdentityRole>>();
+                    var accLogic = provider.GetRequiredService<ICrudLogic<Account>>();
                     var configuration = provider.GetRequiredService<IConfiguration>();
 
                     await RoleInitializer.InitializeRolesAsync(roleManager, configuration);
-                    await AdminInitializer.InitializeAdmin(userManager, configuration);
+                    await AdminInitializer.InitializeAdmin(userManager, accLogic, configuration);
                 } 
                 catch (Exception ex)
                 {

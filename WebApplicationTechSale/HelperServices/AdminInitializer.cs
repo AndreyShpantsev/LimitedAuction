@@ -1,5 +1,7 @@
-﻿using DataAccessLogic.DatabaseModels;
+﻿using DataAccessLogic.CrudLogic;
+using DataAccessLogic.DatabaseModels;
 using DataAccessLogic.HelperServices;
+using DataAccessLogic.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
@@ -8,7 +10,11 @@ namespace WebApplicationTechSale.HelperServices
 {
     public class AdminInitializer
     {
-        public static async Task InitializeAdmin(UserManager<User> userManager, IConfiguration configuration)
+        public static async Task InitializeAdmin(
+            UserManager<User> userManager, 
+            ICrudLogic<Account> accLogic,
+            IConfiguration configuration
+        )
         {
             string email = configuration["AdminEmailAzure"];
             string password = configuration["AdminPasswordAzure"];
@@ -26,7 +32,13 @@ namespace WebApplicationTechSale.HelperServices
                     admin.Email += ApplicationConstantsProvider.AvoidValidationCode();
                     admin.UserName += ApplicationConstantsProvider.AvoidValidationCode();
                     await userManager.AddToRoleAsync(admin, "admin");
+
+                    await accLogic.Create(new Account()
+                    {
+                        UserId = admin.Id
+                    });
                 }
+
             }
         }
     }
