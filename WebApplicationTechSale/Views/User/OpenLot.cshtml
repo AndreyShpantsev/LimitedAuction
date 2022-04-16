@@ -61,10 +61,15 @@
             }
             else
             {
-                if (Model.Bids.Count > 0 && Model.Bids.First().User.UserName == User.Identity.Name)
+                if (Model.Bids.Count > 0 && Model.Bids.First().User.UserName == User.Identity.Name && Model.Status != "Продан")
                 {
                     <h5 class="text-center">Поздравляем! Вы победили в торгах</h5>
                     <h5 class="text-center">для информации о получении товара свяжитесь с продавцом по почте @Model.User.Email</h5>
+                }
+                else if (Model.Status == "Продан")
+                {
+                    <h5 class="text-center">Торги окончены @Model.EndDate.ToShortDateString() @Model.EndDate.ToLongTimeString()</h5>
+                    <h5 class="text-center">Цена закрытия @Model.PriceInfo.FinalPrice руб.</h5>
                 }
                 else
                 {
@@ -85,14 +90,14 @@
         <div class="col-lg-4 col-xl-2">
             <form method="post" asp-action="PlaceBid" asp-controller="User" asp-route-lotId="@Model.Id">
                 <div class="d-grid">
-                    <button type="submit" class="btn btn-lg btn-dark rounded-0">Ставка +@Model.PriceInfo.BidStep</button>
+                    <button type="submit" class="btn btn-lg btn-dark rounded-0">Ставка +@Model.PriceInfo.BidStep руб.</button>
                 </div>
             </form>
         </div>
         <div class="col-lg-4 col-xl-2">
             <form method="post" asp-action="CreateOrder" asp-controller="User" asp-route-lotId="@Model.Id">
                 <div class="d-grid">
-                    <button id="buy" type="submit" class="btn btn-lg btn-dark rounded-0">Купить @Model.PriceInfo.FinalPrice</button>
+                    <button id="buy" type="submit" class="btn btn-lg btn-dark rounded-0">Купить @Model.PriceInfo.FinalPrice руб.</button>
                 </div>
             </form>
         </div>

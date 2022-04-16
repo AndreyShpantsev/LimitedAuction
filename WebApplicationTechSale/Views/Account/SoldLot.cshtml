@@ -12,7 +12,14 @@
                 <h5 class="card-title">@Model.Name</h5>
             </a>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item"><b>Цена: </b>@Model.PriceInfo.CurrentPrice руб.</li>
+                @if (Model.Status == "Продан")
+                {
+                    <li class="list-group-item"><b>Цена: </b>@Model.PriceInfo.FinalPrice руб.</li>
+                }
+                else
+                {
+                    <li class="list-group-item"><b>Цена: </b>@Model.PriceInfo.CurrentPrice руб.</li>
+                }
                 <li class="list-group-item"><b>Дата: </b><span class="active-lot">@Model.EndDate</span></li>
             </ul>
         </div>
@@ -20,4 +27,4 @@
             <a asp-action="OpenLot" asp-controller="User" asp-route-id="@Model.Id" class="my-2 btn btn-lg btn-dark rounded-0 d-block">Подробнее</a>
         </div>
     </div>
-</div> 
+</div>

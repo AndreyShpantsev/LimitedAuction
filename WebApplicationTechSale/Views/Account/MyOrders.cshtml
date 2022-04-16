@@ -15,6 +15,17 @@
                 <h5 class="card-title">@order.AuctionLot.Name</h5>
             </a>
         </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item"><b>Торги окончены: </b>@order.AuctionLot.EndDate.ToShortDateString()</li>
+            @if (order.AuctionLot.Status == "Продан")
+            {
+                <li class="list-group-item"><b>Цена закрытия: </b>@order.AuctionLot.PriceInfo.FinalPrice руб.</li>
+            }
+            else
+            {
+                <li class="list-group-item"><b>Цена закрытия: </b>@order.AuctionLot.PriceInfo.CurrentPrice руб.</li>
+            }
+        </ul>
     </div>
 </div>}
 </div>

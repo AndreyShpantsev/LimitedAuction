@@ -39,6 +39,7 @@ namespace DataAccessLogic.CrudLogic
             model.Id = Guid.NewGuid().ToString();
             model.User = user;
             model.AuctionLot = auctionLot;
+            auctionLot.EndDate = DateTime.Now;
             auctionLot.Status = LotStatusProvider.GetSoldStatus();
 
             context.AuctionLots.Update(auctionLot);
