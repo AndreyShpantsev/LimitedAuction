@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿
+
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="utf-8" />
@@ -53,7 +55,17 @@
                                 <li class="nav-item ms-1 my-1">
                                     <a class="btn btn-lg btn-outline-secondary rounded-0" asp-action="MySavedList" asp-controller="User"><div class="text-dark">Избранное</div></a>
                                 </li>
+                                /*<li class="nav-item ms-1 my-1">
+                                    <div class="text-dark">@Model.Balance руб.</div>
+                                </li>
+                                */
                             }
+                            /*else if (User.IsInRole("admin"))
+                            {
+                                <li class="nav-item ms-1 my-1">
+                                    <div class="text-dark">@Model.Balance руб.</div>
+                                </li>
+                            }*/
                         }
                         else
                         {
@@ -75,7 +87,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2020 - TechSale. Интернет-аукцион компьютерной техники
+            &copy; 2022 - LimitedAuction. Интернет-аукцион лимитированных товаров
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

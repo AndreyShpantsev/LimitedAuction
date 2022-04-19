@@ -37,7 +37,15 @@ namespace WebApplicationTechSale.Models
         [Display(Name = "Конечная цена")]
         [Range(100, 1000000, ErrorMessage = "Укажите цену, за которую готовы отдать товар без торгов")]
         [Required(ErrorMessage = "Цена не должна быть меньше стартовой")]
-        public int? FinalPrice { get; set; } 
+        public int? FinalPrice { get; set; }
+
+        [Display(Name = "Обеспечение ставки")]
+        public bool RateSecurity { get; set; } 
+
+        [Display(Name = "Обеспечение ставки")]
+        [Range(0, 50, ErrorMessage = "Укажите процент обеспечения ставки")]
+        [Required(ErrorMessage = "Маскимальное значение процента - 50")]
+        public int? PercentBid { get; set; }
 
         [Display(Name = "Дата начала торгов")]
         [Required(ErrorMessage = "Укажите дату начала торгов")]

@@ -51,6 +51,11 @@ namespace WebApplicationTechSale.Models
         [Required(ErrorMessage = "Цена не должна быть меньше стартовой")]
         public int? FinalPrice { get; set; }
 
+        [Display(Name = "Обеспечение ставки")]
+        [Range(10, 50, ErrorMessage = "Укажите процент обеспечения ставки")]
+        [Required(ErrorMessage = "Значение процента должно быть между 10 и 50")]
+        public int? PercentBid { get; set; }
+
         [Display(Name = "Дата начала торгов")]
         [Required(ErrorMessage = "Укажите дату начала торгов")]
         [DataType(DataType.Date)]

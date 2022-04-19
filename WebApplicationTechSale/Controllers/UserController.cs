@@ -50,7 +50,7 @@ namespace WebApplicationTechSale.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateLot(CreateLotViewModel model)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && model.RateSecurity == true)
             {
                 AuctionLot toAdd = new AuctionLot
                 {
@@ -67,9 +67,11 @@ namespace WebApplicationTechSale.Controllers
                         StartPrice = model.StartPrice.Value,
                         CurrentPrice = model.StartPrice.Value,
                         BidStep = model.BidStep.Value,
-                        FinalPrice = model.FinalPrice.Value
+                        FinalPrice = model.FinalPrice.Value,
+                        PercentBid = model.PercentBid.Value
                     }
                 };
+           
 
                 string dbPhotoPath = $"/images/{User.Identity.Name}/{model.Name}/photo{Path.GetExtension(model.Photo.FileName)}";
                 toAdd.PhotoSrc = dbPhotoPath;
@@ -77,6 +79,59 @@ namespace WebApplicationTechSale.Controllers
                 try
                 {
                    await lotLogic.Create(toAdd);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                    return View(model);
+                }
+
+                string physicalDirectory = Path.GetDirectoryName($"{environment.WebRootPath + dbPhotoPath}");
+                if (!Directory.Exists(physicalDirectory))
+                {
+                    Directory.CreateDirectory(physicalDirectory);
+                }
+
+                using (FileStream fs = new FileStream($"{environment.WebRootPath + dbPhotoPath}", FileMode.Create))
+                {
+                    await model.Photo.CopyToAsync(fs);
+                }
+
+                return View("Redirect", new RedirectModel
+                {
+                    InfoMessages = RedirectionMessageProvider.LotCreatedMessages(),
+                    RedirectUrl = "/Home/Lots",
+                    SecondsToRedirect = ApplicationConstantsProvider.GetMaxRedirectionTime()
+                });
+            }
+            else if (ModelState.IsValid && model.RateSecurity == false)
+            {
+                AuctionLot toAdd = new AuctionLot
+                {
+                    Name = model.Name,
+                    User = new User
+                    {
+                        UserName = User.Identity.Name
+                    },
+                    Description = model.Description,
+                    StartDate = model.StartDate.Value,
+                    EndDate = model.EndDate.Value,
+                    PriceInfo = new PriceInfo
+                    {
+                        StartPrice = model.StartPrice.Value,
+                        CurrentPrice = model.StartPrice.Value,
+                        BidStep = model.BidStep.Value,
+                        FinalPrice = model.FinalPrice.Value,
+                    }
+                };
+
+
+                string dbPhotoPath = $"/images/{User.Identity.Name}/{model.Name}/photo{Path.GetExtension(model.Photo.FileName)}";
+                toAdd.PhotoSrc = dbPhotoPath;
+
+                try
+                {
+                    await lotLogic.Create(toAdd);
                 }
                 catch (Exception ex)
                 {
@@ -301,6 +356,7 @@ namespace WebApplicationTechSale.Controllers
                         EndDate = lotToEdit.EndDate,
                         StartPrice = lotToEdit.PriceInfo.StartPrice,
                         FinalPrice = lotToEdit.PriceInfo.FinalPrice,
+                        PercentBid = lotToEdit.PriceInfo.PercentBid,
                         OldPhotoSrc = lotToEdit.PhotoSrc
                     });
                 }
@@ -336,6 +392,7 @@ namespace WebApplicationTechSale.Controllers
                         StartPrice = model.StartPrice.Value,
                         BidStep = model.BidStep.Value,
                         FinalPrice = model.FinalPrice.Value,
+                        PercentBid = model.PercentBid.Value
                     }
                 };
 

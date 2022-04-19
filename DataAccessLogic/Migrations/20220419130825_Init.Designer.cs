@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessLogic.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20220413123642_Init")]
+    [Migration("20220419130825_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,6 +34,26 @@ namespace DataAccessLogic.Migrations
                     b.HasIndex("SavedListsId");
 
                     b.ToTable("AuctionLotSavedList");
+                });
+
+            modelBuilder.Entity("DataAccessLogic.DatabaseModels.Account", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
+
+                    b.ToTable("Accounts");
                 });
 
             modelBuilder.Entity("DataAccessLogic.DatabaseModels.AuctionLot", b =>
@@ -158,6 +178,40 @@ namespace DataAccessLogic.Migrations
                         .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("SavedLists");
+                });
+
+            modelBuilder.Entity("DataAccessLogic.DatabaseModels.Transaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("CTAccountId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CTId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DTAccountId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("DTId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CTAccountId");
+
+                    b.HasIndex("DTAccountId");
+
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("DataAccessLogic.DatabaseModels.User", b =>
@@ -377,6 +431,15 @@ namespace DataAccessLogic.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("DataAccessLogic.DatabaseModels.Account", b =>
+                {
+                    b.HasOne("DataAccessLogic.DatabaseModels.User", "User")
+                        .WithOne("Account")
+                        .HasForeignKey("DataAccessLogic.DatabaseModels.Account", "UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("DataAccessLogic.DatabaseModels.AuctionLot", b =>
                 {
                     b.HasOne("DataAccessLogic.DatabaseModels.User", "User")
@@ -395,6 +458,9 @@ namespace DataAccessLogic.Migrations
                                 .HasColumnType("int");
 
                             b1.Property<int>("FinalPrice")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("PercentBid")
                                 .HasColumnType("int");
 
                             b1.Property<int>("StartPrice")
@@ -461,6 +527,21 @@ namespace DataAccessLogic.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("DataAccessLogic.DatabaseModels.Transaction", b =>
+                {
+                    b.HasOne("DataAccessLogic.DatabaseModels.Account", "CTAccount")
+                        .WithMany()
+                        .HasForeignKey("CTAccountId");
+
+                    b.HasOne("DataAccessLogic.DatabaseModels.Account", "DTAccount")
+                        .WithMany()
+                        .HasForeignKey("DTAccountId");
+
+                    b.Navigation("CTAccount");
+
+                    b.Navigation("DTAccount");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -521,6 +602,8 @@ namespace DataAccessLogic.Migrations
 
             modelBuilder.Entity("DataAccessLogic.DatabaseModels.User", b =>
                 {
+                    b.Navigation("Account");
+
                     b.Navigation("AuctionLots");
 
                     b.Navigation("Bids");

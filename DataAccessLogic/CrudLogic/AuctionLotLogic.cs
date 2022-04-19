@@ -109,6 +109,8 @@ namespace DataAccessLogic.CrudLogic
                     ? toUpdate.PriceInfo.BidStep : model.PriceInfo.BidStep;
                 toUpdate.PriceInfo.FinalPrice = model.PriceInfo.FinalPrice == 0
                     ? toUpdate.PriceInfo.FinalPrice : model.PriceInfo.FinalPrice;
+                toUpdate.PriceInfo.PercentBid = model.PriceInfo.PercentBid == 0
+                    ? toUpdate.PriceInfo.PercentBid : model.PriceInfo.PercentBid;
             }
             toUpdate.Status = string.IsNullOrWhiteSpace(model.Status) ? toUpdate.Status : model.Status;
             toUpdate.Name = string.IsNullOrWhiteSpace(model.Name) ? toUpdate.Name : model.Name;

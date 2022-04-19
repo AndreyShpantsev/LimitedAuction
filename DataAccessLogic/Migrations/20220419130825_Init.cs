@@ -70,6 +70,25 @@ namespace DataAccessLogic.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Accounts",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Accounts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Accounts_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
@@ -169,6 +188,7 @@ namespace DataAccessLogic.Migrations
                     PriceInfo_CurrentPrice = table.Column<int>(type: "int", nullable: true),
                     PriceInfo_BidStep = table.Column<int>(type: "int", nullable: true),
                     PriceInfo_FinalPrice = table.Column<int>(type: "int", nullable: true),
+                    PriceInfo_PercentBid = table.Column<int>(type: "int", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
@@ -196,6 +216,36 @@ namespace DataAccessLogic.Migrations
                         name: "FK_SavedLists_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Transactions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DTId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CTId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DTAccountId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CTAccountId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Transactions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Transactions_Accounts_CTAccountId",
+                        column: x => x.CTAccountId,
+                        principalTable: "Accounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Transactions_Accounts_DTAccountId",
+                        column: x => x.DTAccountId,
+                        principalTable: "Accounts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -298,6 +348,13 @@ namespace DataAccessLogic.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Accounts_UserId",
+                table: "Accounts",
+                column: "UserId",
+                unique: true,
+                filter: "[UserId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
                 column: "RoleId");
@@ -379,6 +436,16 @@ namespace DataAccessLogic.Migrations
                 column: "UserId",
                 unique: true,
                 filter: "[UserId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transactions_CTAccountId",
+                table: "Transactions",
+                column: "CTAccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transactions_DTAccountId",
+                table: "Transactions",
+                column: "DTAccountId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -411,6 +478,9 @@ namespace DataAccessLogic.Migrations
                 name: "Orders");
 
             migrationBuilder.DropTable(
+                name: "Transactions");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
@@ -418,6 +488,9 @@ namespace DataAccessLogic.Migrations
 
             migrationBuilder.DropTable(
                 name: "AuctionLots");
+
+            migrationBuilder.DropTable(
+                name: "Accounts");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
