@@ -12,6 +12,9 @@ namespace DataAccessLogic.DatabaseModels
         public DateTime EndDate { get; set; }
         public string PhotoSrc { get; set; }
         public string Status { get; set; }
+        //public string TypeOfAuction { get; set; }
+        //public DateTime StartApplication { get; set; }
+        //public DateTime EndApplication { get; set;  }
 
         public PriceInfo PriceInfo { get; set; }
 
