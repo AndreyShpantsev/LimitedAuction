@@ -40,44 +40,30 @@
         </form>
     </div>
     <div class="col-md-8 mb-2">
-        <a class="btn btn-lg btn-dark d-block rounded-0" id="reject" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="@Model.Expanded.ToString().ToLower()" aria-controls="collapseExample">Отклонить</a>
-        @if (Model.Expanded)
-        {
-            <div class="collapse my-3 show" id="collapseExample">
-                <form method="post" asp-action="RejectLot" asp-controller="Moderator">
-                    <div class="mb-3" asp-validation-summary="All"></div>
-                    <div class="mb-3">
-                        <input name="model.AuctionLot.Id" value="@Model.AuctionLot.Id" hidden />
-                        <input name="model.AuctionLot.Name" value="@Model.AuctionLot.Name" hidden />
-                        <input name="model.AuctionLot.Description" value="@Model.AuctionLot.Description" hidden />
-                        <input name="model.AuctionLot.PhotoSrc" value="@Model.AuctionLot.PhotoSrc" hidden />
-                        <label for="#note" class="form-label h5">Укажите причину:</label>
-                        <textarea name="model.RejectNote" id="note" class="form-control rounded-0" rows="3"></textarea>
-                    </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-lg btn-danger rounded-0">Подтвердить</button>
-                    </div>
-                </form>
-            </div>
-        }
-        else
-        {
-            <div class="collapse my-3" id="collapseExample">
-                <form method="post" asp-action="RejectLot" asp-controller="Moderator">
-                    <div class="mb-3" asp-validation-summary="All"></div>
-                    <div class="mb-3">
-                        <input name="model.AuctionLot.Id" value="@Model.AuctionLot.Id" hidden />
-                        <input name="model.AuctionLot.Name" value="@Model.AuctionLot.Name" hidden />
-                        <input name="model.AuctionLot.Description" value="@Model.AuctionLot.Description" hidden />
-                        <input name="model.AuctionLot.PhotoSrc" value="@Model.AuctionLot.PhotoSrc" hidden />
-                        <label for="#note" class="form-label h5">Укажите причину:</label>
-                        <textarea name="model.RejectNote" id="note" class="form-control rounded-0" rows="3"></textarea>
-                    </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-lg btn-danger rounded-0">Подтвердить</button>
-                    </div>
-                </form>
-            </div>
-        }
+        <a class="btn btn-lg btn-dark d-block rounded-0" 
+            id="reject" 
+            data-bs-toggle="collapse" 
+            href="#collapseExample" 
+            role="button" 
+            aria-expanded="@Model.Expanded.ToString().ToLower()" 
+            aria-controls="collapseExample">
+            Отклонить
+        </a>
+        <div class="collapse my-3 @(Model.Expanded ? "show" : string.Empty)" id="collapseExample">
+            <form method="post" asp-action="RejectLot" asp-controller="Moderator">
+                <div class="mb-3" asp-validation-summary="All"></div>
+                <div class="mb-3">
+                    <input name="model.AuctionLot.Id" value="@Model.AuctionLot.Id" hidden />
+                    <input name="model.AuctionLot.Name" value="@Model.AuctionLot.Name" hidden />
+                    <input name="model.AuctionLot.Description" value="@Model.AuctionLot.Description" hidden />
+                    <input name="model.AuctionLot.PhotoSrc" value="@Model.AuctionLot.PhotoSrc" hidden />
+                    <label for="#note" class="form-label h5">Укажите причину:</label>
+                    <textarea name="model.RejectNote" id="note" class="form-control rounded-0" rows="3"></textarea>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-lg btn-danger rounded-0">Подтвердить</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>

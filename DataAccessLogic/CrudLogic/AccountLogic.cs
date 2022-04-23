@@ -1,7 +1,9 @@
 ﻿using DataAccessLogic.DatabaseModels;
 using DataAccessLogic.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DataAccessLogic.CrudLogic
@@ -45,9 +47,14 @@ namespace DataAccessLogic.CrudLogic
             throw new NotImplementedException();
         }
 
-        public Task<List<Account>> Read(Account model)
+        public async Task<List<Account>> Read(Account model)
         {
-            throw new NotImplementedException();
+            List<Account> userAccountData = await context
+                .Accounts
+                .Where(accInfo => accInfo.UserId == model.UserId)
+                .ToListAsync();
+
+            return userAccountData;
         }
 
         public Task Update(Account model)

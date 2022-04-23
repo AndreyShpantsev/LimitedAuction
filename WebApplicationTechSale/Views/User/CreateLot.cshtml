@@ -23,6 +23,28 @@
                             <textarea asp-for="Description" class="form-control rounded-0" rows="3"></textarea>
                             <div class="form-text">Не более 500 символов</div>
                             <span class="text-danger" asp-validation-for="Description"></span>
+                        </div>                        
+                        <div class="mb-3">
+                            <label asp-for="TypeOfAuction" class="form-label"></label>
+                            <div class="form-check">
+                                <input asp-for="TypeOfAuction" type="radio" value="Open" class="form-check-input" id="openAuctionBtn" checked="checked" />
+                                <label class="form-check-label" for="openAuctionBtn">Открытый</label>
+                            </div>
+                            <div class="form-check">
+                                <input asp-for="TypeOfAuction" type="radio" value="Closed" class="form-check-input" id="closedAuctionBtn" />
+                                <label class="form-check-label" for="closedAuctionBtn">С ограниченным участием</label>
+                            </div>
+                            <span class="text-danger" asp-validation-for="TypeOfAuction"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="AppStartDate" class="form-label"></label>
+                            <input asp-for="AppStartDate" class="form-control rounded-0" type="date" min="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")">
+                            <span class="text-danger" asp-validation-for="StartDate"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="AppEndDate" class="form-label"></label>
+                            <input asp-for="AppEndDate" class="form-control rounded-0" type="date" min="@DateTime.Now.AddDays(2).ToString("yyyy-MM-dd")">
+                            <span class="text-danger" asp-validation-for="EndDate"></span>
                         </div>
                         <div class="mb-3">
                             <label asp-for="StartPrice" class="form-label"></label>

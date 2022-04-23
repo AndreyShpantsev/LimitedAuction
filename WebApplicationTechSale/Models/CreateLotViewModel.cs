@@ -24,6 +24,18 @@ namespace WebApplicationTechSale.Models
         [MaxLength(500, ErrorMessage = "Не более 500 символов")]
         public string Description { get; set; }
 
+        [Display(Name = "Тип аукциона")]
+        [Required(ErrorMessage = "Укажите тип аукциона")]
+        public string TypeOfAuction { get; set; }
+
+        [Display(Name = "Дата начала срока подачи заявок")]
+        [DataType(DataType.Date)]
+        public DateTime? AppStartDate { get; set; }
+
+        [Display(Name = "Дата окончания срока подачи заявок")]
+        [DataType(DataType.Date)]
+        public DateTime? AppEndDate { get; set; }
+
         [Display(Name = "Начальная цена")]
         [Required(ErrorMessage = "Укажите начальную цену")]
         [Range(0, 1000000, ErrorMessage = "Цена не должна быть меньше нуля")]

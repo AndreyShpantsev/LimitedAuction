@@ -22,10 +22,18 @@ namespace WebApplicationTechSale.Controllers
         private readonly IBot telegramBot;
         private readonly ICrudLogic<User> userLogic;
         private readonly ICrudLogic<Order> orderLogic;
+        private readonly ICrudLogic<Account> accountLogic;
 
-        public AccountController(IPagination<AuctionLot> lotLogic, ISavedLogic savedListLogic,
-            UserManager<User> userManager, SignInManager<User> signInManager, IBot telegramBot,
-            ICrudLogic<User> userLogic, ICrudLogic<Order> orderLogic)
+        public AccountController(
+            IPagination<AuctionLot> lotLogic, 
+            ISavedLogic savedListLogic,
+            UserManager<User> userManager, 
+            SignInManager<User> signInManager, 
+            IBot telegramBot,
+            ICrudLogic<User> userLogic, 
+            ICrudLogic<Order> orderLogic,
+            ICrudLogic<Account> accountLogic
+        )
         {
             this.lotLogic = lotLogic;
             this.userManager = userManager;
@@ -34,6 +42,7 @@ namespace WebApplicationTechSale.Controllers
             this.telegramBot = telegramBot;
             this.userLogic = userLogic;
             this.orderLogic = orderLogic;
+            this.accountLogic = accountLogic;
         }
 
         [Authorize]
@@ -227,6 +236,10 @@ namespace WebApplicationTechSale.Controllers
                     user.UserName += ApplicationConstantsProvider.AvoidValidationCode();
                     await userManager.AddToRoleAsync(user, "regular user");
                     await savedListLogic.Create(user);
+                    await accountLogic.Create(new Account
+                    {
+                        UserId = user.Id
+                    });
                     await signInManager.SignInAsync(user, false);
                     return View("Redirect", new RedirectModel
                     {
