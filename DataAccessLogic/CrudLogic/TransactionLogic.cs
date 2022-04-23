@@ -3,6 +3,7 @@ using DataAccessLogic.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,28 +19,36 @@ namespace DataAccessLogic.CrudLogic
         }
         public async Task Create(Transaction model)
         {
-            if (model == null || model.CTId == null 
-                || model.DTId == null || model.Amount == 0.0m)
+            if (model == null || model.CTAccountId == null 
+                || model.DTAccountId == null || model.Amount == 0.0m)
             {
                 throw new Exception("Не все параметры транзакции определены.");
             }
 
             try
             {
-                await context.Transactions.AddAsync(model);
+                model.TransactionDate = DateTime.Now;
                 Account accountDT = await context.Accounts.FirstOrDefaultAsync(acc =>
-                acc.Id == model.DTId);
+                acc.Id == model.DTAccountId);
                 Account accountCT = await context.Accounts.FirstOrDefaultAsync(acc =>
-                acc.Id == model.CTId);
+                acc.Id == model.CTAccountId);
 
                 if (accountDT == null || accountCT == null)
                 {
                     throw new Exception();
                 }
 
-                accountCT.Balance -= model.Amount;
-                accountDT.Balance += model.Amount;
+                if (model.CTAccountId == model.DTAccountId)
+                {
+                    accountDT.Balance += model.Amount;
+                }
+                else
+                {
+                    accountCT.Balance -= model.Amount;
+                    accountDT.Balance += model.Amount;
+                }
                 
+                await context.Transactions.AddAsync(model);
                 await context.SaveChangesAsync();
             }
             catch (Exception)
@@ -53,9 +62,19 @@ namespace DataAccessLogic.CrudLogic
             throw new NotImplementedException();
         }
 
-        public Task<List<Transaction>> Read(Transaction model)
+        public async Task<List<Transaction>> Read(Transaction model)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(model.CTAccountId) || string.IsNullOrWhiteSpace(model.DTAccountId))
+            {
+                throw new Exception("Номер счета не определен");
+            }
+
+            List<Transaction> transactionHistory = await context.Transactions
+                .Where(tran => tran.CTAccountId == model.CTAccountId || tran.DTAccountId == model.DTAccountId)
+                .OrderByDescending(tran => tran.TransactionDate)
+                .ToListAsync();
+
+            return transactionHistory;
         }
 
         public Task Update(Transaction model)

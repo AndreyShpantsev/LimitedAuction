@@ -91,5 +91,24 @@ namespace WebApplicationTechSale.HelperServices
                 "Сейчас вы будете перенаправлены на страницу со списком Ваших покупок"
             };
         }
+
+        public static List<string> SuccessDepositMessage()
+        {
+            return new List<string>()
+            {
+                "Счет успешно пополнен",
+                "Сейчас вы будете перенаправлены на страницу со списком операций"
+            };
+        }
+
+        public static List<string> SuccessWithdrawMessage()
+        {
+            return new List<string>()
+            {
+                "Запрос на вывод денежных средств успешно создан",
+                "Зачисление денежных средств на банковскую карту осуществляется в течение 10 рабочих дней",
+                "Сейчас вы будете перенаправлены на страницу со списком операций"
+            };
+        }
     }
 }

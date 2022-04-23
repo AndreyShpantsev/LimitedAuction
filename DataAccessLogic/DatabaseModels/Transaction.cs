@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccessLogic.DatabaseModels
 {
@@ -7,11 +8,11 @@ namespace DataAccessLogic.DatabaseModels
         public int Id { get; set; }
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Amount { get; set; }
-        public string DTId { get; set; }
-        public string CTId { get; set; }
+        public string DTAccountId { get; set; }
+        public string CTAccountId { get; set; }
         public string Comment { get; set; }
-        public Account DTAccount { get; set; }
-        public Account CTAccount { get; set; }
-
+        public DateTime TransactionDate { get; set; }
+        public virtual Account DTAccount { get; set; }
+        public virtual Account CTAccount { get; set; }
     }
 }

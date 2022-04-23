@@ -1,0 +1,83 @@
+﻿@using DataAccessLogic.DatabaseModels
+@using System.Globalization
+
+@model MoneyInfoViewModel
+@{
+    ViewData["Title"] = "Список модераторов";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-9">
+        <div class="my-3 row justify-content-center">
+            <div class="mb-3 col-lg-6">
+                <a class="btn btn-dark btn-lg d-block rounded-0"
+                    asp-controller="Account" 
+                    asp-action="MakeDeposit" 
+                    asp-route-accountId="@Model.AccountId"
+                >Пополнить счет</a>
+            </div>
+            <div class="mb-3 col-lg-6">
+                <a class="btn btn-dark btn-lg d-block rounded-0"
+                    asp-controller="Account" 
+                    asp-action="MakeWithdraw" 
+                    asp-route-accountId="@Model.AccountId"
+                >Вывести со счета</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-10 col-xl-9">
+        <h5 class="py-3 text-center">Список операций</h5>
+        <div class="table-responsive">
+            <table class="table table-bordered border-light text-center">
+                <thead>
+                    <tr>
+                        <th scope="col">Тип операции</th>
+                        <th scope="col">Дата операции</th>
+                        <th scope="col">Сумма</th>
+                        <th scope="col">Краткое описание</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Transaction tran in Model.TransactionHistory)
+                    {
+                        <tr>
+                            <td>
+                                @if (tran.CTAccountId == tran.DTAccountId)
+                                {
+                                    if (tran.Amount > 0)
+                                    {
+                                        <span>Приход</span>
+                                    }
+                                    if (tran.Amount < 0)
+                                    {
+                                        <span>Расход</span>
+                                    }
+                                }
+                                else
+                                {
+                                    if (tran.CTAccountId == Model.AccountId)
+                                    {
+                                        <span>Расход</span>
+                                    }
+                                    if (tran.DTAccountId == Model.AccountId)
+                                    {
+                                        <span>Приход</span>
+                                    }   
+                                }
+                            </td>
+                            <td>
+                                @tran.TransactionDate.ToString("dd.MM.yyyy hh:mm:ss")
+                            </td>
+                            <td>
+                                @($"{Math.Abs(tran.Amount).ToString("C", CultureInfo.CurrentCulture)}")
+                            </td>
+                            <td>
+                                @tran.Comment
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

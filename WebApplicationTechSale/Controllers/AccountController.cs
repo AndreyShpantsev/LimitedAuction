@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using TechSaleTelegramBot;
 using WebApplicationTechSale.HelperServices;
@@ -23,6 +25,7 @@ namespace WebApplicationTechSale.Controllers
         private readonly ICrudLogic<User> userLogic;
         private readonly ICrudLogic<Order> orderLogic;
         private readonly ICrudLogic<Account> accountLogic;
+        private readonly ICrudLogic<Transaction> transactionLogic;
 
         public AccountController(
             IPagination<AuctionLot> lotLogic, 
@@ -32,7 +35,8 @@ namespace WebApplicationTechSale.Controllers
             IBot telegramBot,
             ICrudLogic<User> userLogic, 
             ICrudLogic<Order> orderLogic,
-            ICrudLogic<Account> accountLogic
+            ICrudLogic<Account> accountLogic,
+            ICrudLogic<Transaction> transactionLogic
         )
         {
             this.lotLogic = lotLogic;
@@ -43,6 +47,7 @@ namespace WebApplicationTechSale.Controllers
             this.userLogic = userLogic;
             this.orderLogic = orderLogic;
             this.accountLogic = accountLogic;
+            this.transactionLogic = transactionLogic;
         }
 
         [Authorize]
@@ -361,6 +366,102 @@ namespace WebApplicationTechSale.Controllers
             });
 
             return View(userOrders);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Money()
+        {
+            string userId = User.Claims
+                .FirstOrDefault(uc => uc.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            Account userAccountData = (await accountLogic.Read(new Account
+            {
+                UserId = userId
+            })).FirstOrDefault();
+
+            List<Transaction> userTransactionHistory = 
+                await transactionLogic.Read(new Transaction
+                {
+                    CTAccountId = userAccountData.Id,
+                    DTAccountId = userAccountData.Id
+                });
+
+            MoneyInfoViewModel moneyInfoView = new MoneyInfoViewModel
+            {
+                AccountId = userAccountData.Id,
+                Balance = $"{userAccountData.Balance.ToString("C", CultureInfo.CurrentCulture)}",
+                TransactionHistory = userTransactionHistory
+            };
+
+            return View(moneyInfoView);
+        }
+
+        [HttpGet]
+        public IActionResult MakeDeposit(string accountId)
+        {
+            MakeTransactionViewModel makeTransactionViewModel = new MakeTransactionViewModel
+            {
+                CtAccountId = accountId,
+                DtAccountId = accountId
+            };
+            return View(makeTransactionViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MakeDeposit(MakeTransactionViewModel makeTransactionViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                await transactionLogic.Create(new Transaction
+                {
+                    Amount = makeTransactionViewModel.Amount,
+                    Comment = "Пополнение счета с банковской карты",
+                    CTAccountId = makeTransactionViewModel.CtAccountId,
+                    DTAccountId = makeTransactionViewModel.DtAccountId,
+                });
+
+                return View("Redirect", new RedirectModel
+                {
+                    InfoMessages = RedirectionMessageProvider.SuccessDepositMessage(),
+                    RedirectUrl = "/Account/Money",
+                    SecondsToRedirect = ApplicationConstantsProvider.GetShortRedirectionTime()
+                });
+            }
+            return View(makeTransactionViewModel);
+        }
+
+        [HttpGet]
+        public IActionResult MakeWithdraw(string accountId)
+        {
+            MakeTransactionViewModel makeTransactionViewModel = new MakeTransactionViewModel
+            {
+                CtAccountId = accountId,
+                DtAccountId = accountId
+            };
+            return View(makeTransactionViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MakeWithdraw(MakeTransactionViewModel makeTransactionViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                await transactionLogic.Create(new Transaction
+                {
+                    Amount = -1 * makeTransactionViewModel.Amount,
+                    Comment = "Вывод средств на банковскую карту",
+                    CTAccountId = makeTransactionViewModel.CtAccountId,
+                    DTAccountId = makeTransactionViewModel.DtAccountId,
+                });
+
+                return View("Redirect", new RedirectModel
+                {
+                    InfoMessages = RedirectionMessageProvider.SuccessDepositMessage(),
+                    RedirectUrl = "/Account/Money",
+                    SecondsToRedirect = ApplicationConstantsProvider.GetShortRedirectionTime()
+                });
+            }
+            return View(makeTransactionViewModel);
         }
     }
 }
