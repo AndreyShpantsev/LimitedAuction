@@ -20,7 +20,7 @@ namespace DataAccessLogic.CrudLogic
         public async Task Create(Transaction model)
         {
             if (model == null || model.CTAccountId == null 
-                || model.DTAccountId == null || model.Amount == 0.0m)
+            || model.DTAccountId == null || model.Amount == 0.0m)
             {
                 throw new Exception("Не все параметры транзакции определены.");
             }
