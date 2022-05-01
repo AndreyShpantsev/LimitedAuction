@@ -1,4 +1,5 @@
 ﻿using DataAccessLogic.DatabaseModels;
+using DataAccessLogic.Enums;
 using DataAccessLogic.HelperServices;
 using DataAccessLogic.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,32 @@ namespace DataAccessLogic.CrudLogic
                     "быть больше даты начала торгов минимум на 1 день");
             }
 
+            if (model.TypeOfAuction == TypeOfAuction.Closed)
+            {
+                if (model.AppStartDate == null || model.AppEndDate == null)
+                {
+                    throw new Exception("Укажите дату начала и дату окончания срока подачи заявок");
+                }
+
+                if (model.AppStartDate >= model.StartDate)
+                {
+                    throw new Exception("Дата начала срока подачи заявок должна " +
+                        "быть меньше даты начала торгов");
+                }
+
+                if (model.AppEndDate >= model.StartDate)
+                {
+                    throw new Exception("Дата окончания срока подачи заявок должна " +
+                        "быть меньше даты начала торгов");
+                }
+
+                if (model.AppStartDate >= model.AppEndDate)
+                {
+                    throw new Exception("Дата начала срока подачи заявок должна " +
+                        "быть меньше даты окончания срока подачи заявок");
+                }
+            }
+
             AuctionLot sameLot = await context.AuctionLots
                 .Include(lot => lot.User)
                 .FirstOrDefaultAsync(lot =>
@@ -40,7 +67,7 @@ namespace DataAccessLogic.CrudLogic
                 throw new Exception("Уже есть лот с таким названием");
             }
 
-            model.Status = LotStatusProvider.GetOnModerationStatus();
+            model.Status = LotStatus.OnModeration;
             model.Id = Guid.NewGuid().ToString();
             model.User = await context.Users.FirstAsync(user => 
             user.UserName == model.User.UserName);
@@ -112,7 +139,7 @@ namespace DataAccessLogic.CrudLogic
                 toUpdate.PriceInfo.PercentBid = model.PriceInfo.PercentBid == 0
                     ? toUpdate.PriceInfo.PercentBid : model.PriceInfo.PercentBid;
             }
-            toUpdate.Status = string.IsNullOrWhiteSpace(model.Status) ? toUpdate.Status : model.Status;
+            toUpdate.Status = model.Status ?? toUpdate.Status;
             toUpdate.Name = string.IsNullOrWhiteSpace(model.Name) ? toUpdate.Name : model.Name;
             toUpdate.Description = string.IsNullOrWhiteSpace(model.Description) ? toUpdate.Description : model.Description;
             toUpdate.StartDate = model.StartDate == DateTime.MinValue ? toUpdate.StartDate : model.StartDate;
@@ -125,9 +152,9 @@ namespace DataAccessLogic.CrudLogic
         public async Task<List<AuctionLot>> Read(AuctionLot model)
         {
             return await context.AuctionLots.Include(lot => lot.User).Include(lot => lot.Note).Where(lot => model == null
-            || model.User != null && !string.IsNullOrWhiteSpace(model.User.UserName) && lot.User.UserName == model.User.UserName
-            || !string.IsNullOrWhiteSpace(model.Id) && lot.Id == model.Id
-            || !string.IsNullOrWhiteSpace(model.Status) && lot.Status == model.Status)
+            || (model.User != null && !string.IsNullOrWhiteSpace(model.User.UserName) && lot.User.UserName == model.User.UserName)
+            || (!string.IsNullOrWhiteSpace(model.Id) && lot.Id == model.Id)
+            || (model.Status != null && lot.Status == model.Status))
             .ToListAsync();
         }
 
@@ -135,8 +162,9 @@ namespace DataAccessLogic.CrudLogic
         {
             return await context.AuctionLots.Include(lot => lot.User).Include(lot =>
             lot.PriceInfo).Where(lot => model == null
-            || !string.IsNullOrWhiteSpace(model.Status) && lot.Status == model.Status
-            || model.User != null && lot.User == model.User)
+            || (model.Status != null && lot.Status == model.Status)
+            || (model.Status == LotStatus.Published && lot.Status == LotStatus.Applications)
+            || (model.User != null && lot.User == model.User))
             .OrderByDescending(lot => lot.StartDate)
             .Skip((pageNumber <= 0 ? 0 : pageNumber - 1) *
             ApplicationConstantsProvider.GetPageSize())
@@ -147,8 +175,9 @@ namespace DataAccessLogic.CrudLogic
         public async Task<int> GetCount(AuctionLot model)
         {
             return await context.AuctionLots.CountAsync(lot => model == null 
-            || !string.IsNullOrWhiteSpace(model.Status) && lot.Status == model.Status
-            || model.User != null && lot.User == model.User);
+            || (model.Status != null && lot.Status == model.Status)
+            || (model.Status == LotStatus.Published && lot.Status == LotStatus.Applications)
+            || (model.User != null && lot.User == model.User));
         }
     }
 }

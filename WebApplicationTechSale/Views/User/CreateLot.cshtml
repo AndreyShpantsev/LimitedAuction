@@ -61,14 +61,10 @@
                             <input asp-for="FinalPrice" class="form-control rounded-0" type="number" min="0">
                             <span class="text-danger" asp-validation-for="FinalPrice"></span>
                         </div>
-                        <div class="form-check mb-3">
-                            <label asp-for="RateSecurity" class="form-check-label"></label>
-                            <input asp-for="RateSecurity" class="form-check-input rounded-0">
-                        </div>
                         <div class="mb-3">
                             <label asp-for="PercentBid" class="form-label"></label>
                             <input asp-for="PercentBid" class="form-control rounded-0" type="number" min="0">
-                            <div class="form-text">Если обеспечение ставки отсутсвует, укажите 0</div>
+                            <div class="form-text">Укажите значение от 1 до 50 или оставьте поле пустым</div>
                             <span class="text-danger" asp-validation-for="PercentBid"></span>
                         </div>
                         <div class="mb-3">

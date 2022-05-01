@@ -1,5 +1,5 @@
 ﻿@using DataAccessLogic.DatabaseModels;
-@using DataAccessLogic.HelperServices;
+@using DataAccessLogic.Enums;
 
 @model WebApplicationTechSale.Models.PersonalAccountViewModel
 
@@ -84,19 +84,19 @@
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         @foreach (AuctionLot auctionLot in Model.PersonalLotsList.AuctionLots)
         {
-            if (auctionLot.Status == LotStatusProvider.GetAcceptedStatus())
+            if (auctionLot.Status == LotStatus.Published || auctionLot.Status == LotStatus.Applications)
             {
                 await Html.RenderPartialAsync("AcceptedLot", auctionLot);
             }
-            if (auctionLot.Status == LotStatusProvider.GetOnModerationStatus())
+            if (auctionLot.Status == LotStatus.OnModeration)
             {
                 await Html.RenderPartialAsync("LotOnModeration", auctionLot);
             }
-            if (auctionLot.Status == LotStatusProvider.GetRejectedStatus())
+            if (auctionLot.Status == LotStatus.Rejected)
             {
                 await Html.RenderPartialAsync("RejectedLot", auctionLot);
             }
-            if (auctionLot.Status == LotStatusProvider.GetSoldStatus())
+            if (auctionLot.Status == LotStatus.Sold)
             {
                 await Html.RenderPartialAsync("SoldLot", auctionLot);
             }

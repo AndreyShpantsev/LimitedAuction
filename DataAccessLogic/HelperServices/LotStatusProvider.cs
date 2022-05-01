@@ -1,48 +1,67 @@
-﻿namespace DataAccessLogic.HelperServices
+﻿using DataAccessLogic.Enums;
+
+namespace DataAccessLogic.HelperServices
 {
     public static class LotStatusProvider
     {
-        public static string GetOnModerationStatus()
+        public static string GetStatusOnRussian(LotStatus? status)
+        {
+            return status switch
+            {
+                LotStatus.Active => GetActiveStatus(),
+                LotStatus.Applications => GetApplicationsStatus(),
+                LotStatus.ApplicationsView => GetApplicationsViewStatus(),
+                LotStatus.Contract => GetContractStatus(),
+                LotStatus.NotHeld => GetNotHeldStatus(),
+                LotStatus.OnModeration => GetOnModerationStatus(),
+                LotStatus.Published => GetPublishedStatus(),
+                LotStatus.Rejected => GetRejectedStatus(),
+                LotStatus.Sold => GetSoldStatus(),
+                _ => string.Empty,
+            };
+        }
+
+        private static string GetOnModerationStatus()
         {
             return "На модерации";
         }
 
-        public static string GetRejectedStatus()
+        private static string GetRejectedStatus()
         {
             return "Отклонен";
         }
 
-        public static string GetAcceptedStatus()
+        private static string GetPublishedStatus()
         {
             return "Размещён";
         }
 
-        public static string GetApplicationsStatus()
+        private static string GetApplicationsStatus()
         {
             return "Подача заявок";
         }
 
-        public static string GetApplicationsViewStatus()
+        private static string GetApplicationsViewStatus()
         {
             return "Рассмотрение заявок";
         }
 
-        public static string GetActiveStatus()
+        private static string GetActiveStatus()
         {
             return "Идут торги";
         }
 
-        public static string GetNotHeldStatus()
+        private static string GetNotHeldStatus()
         {
             return "Аукцион не состоялся";
         }
 
-        public static string GetContractStatus()
+        private static string GetContractStatus()
         {
             return "Заключение контракта";
         }
 
-        public static string GetSoldStatus()
+        private static string GetSoldStatus()
         {
             return "Продан";
         }

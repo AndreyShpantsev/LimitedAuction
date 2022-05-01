@@ -17,7 +17,7 @@
         </div>
         <ul class="list-group list-group-flush">
             <li class="list-group-item"><b>Торги окончены: </b>@order.AuctionLot.EndDate.ToShortDateString()</li>
-            @if (order.AuctionLot.Status == "Продан")
+            @if (order.AuctionLot.Status == DataAccessLogic.Enums.LotStatus.Sold)
             {
                 <li class="list-group-item"><b>Цена закрытия: </b>@order.AuctionLot.PriceInfo.FinalPrice руб.</li>
             }

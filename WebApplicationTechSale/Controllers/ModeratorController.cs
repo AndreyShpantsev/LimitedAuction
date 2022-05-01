@@ -1,4 +1,5 @@
 ﻿using DataAccessLogic.DatabaseModels;
+using DataAccessLogic.Enums;
 using DataAccessLogic.HelperServices;
 using DataAccessLogic.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -36,12 +37,12 @@ namespace WebApplicationTechSale.Controllers
         {
             List<AuctionLot> lotsOnModeration = await paginationLotLogic.GetPage(page, new AuctionLot
             {
-                Status = LotStatusProvider.GetOnModerationStatus()
+                Status = LotStatus.OnModeration
             });
 
             int lotsCount = await paginationLotLogic.GetCount(new AuctionLot
             {
-                Status = LotStatusProvider.GetOnModerationStatus()
+                Status = LotStatus.OnModeration
             });
 
             return View(new AuctionLotsViewModel
@@ -77,7 +78,7 @@ namespace WebApplicationTechSale.Controllers
                 await crudLotLogic.Update(new AuctionLot
                 {
                     Id = id,
-                    Status = LotStatusProvider.GetAcceptedStatus()
+                    Status = LotStatus.Published
                 });
                 await SendAcceptMessage(id);
                 return View("Redirect", new RedirectModel
@@ -115,7 +116,7 @@ namespace WebApplicationTechSale.Controllers
                 await crudLotLogic.Update(new AuctionLot
                 {
                     Id = model.AuctionLot.Id,
-                    Status = LotStatusProvider.GetRejectedStatus()
+                    Status = LotStatus.Rejected
                 });
                 await crudNoteLogic.Delete(new Note
                 {

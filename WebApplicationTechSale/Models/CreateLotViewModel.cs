@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using DataAccessLogic.Enums;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.ComponentModel.DataAnnotations;
 using WebApplicationTechSale.HelperServices;
@@ -26,7 +27,7 @@ namespace WebApplicationTechSale.Models
 
         [Display(Name = "Тип аукциона")]
         [Required(ErrorMessage = "Укажите тип аукциона")]
-        public string TypeOfAuction { get; set; }
+        public TypeOfAuction TypeOfAuction { get; set; }
 
         [Display(Name = "Дата начала срока подачи заявок")]
         [DataType(DataType.Date)]
@@ -51,12 +52,8 @@ namespace WebApplicationTechSale.Models
         [Required(ErrorMessage = "Цена не должна быть меньше стартовой")]
         public int? FinalPrice { get; set; }
 
-        [Display(Name = "Обеспечение ставки")]
-        public bool RateSecurity { get; set; } 
-
-        [Display(Name = "Обеспечение ставки")]
-        [Range(0, 50, ErrorMessage = "Укажите процент обеспечения ставки")]
-        [Required(ErrorMessage = "Маскимальное значение процента - 50")]
+        [Display(Name = "Размер обеспечения ставки (в процентах)")]
+        [Range(1, 50, ErrorMessage = "Размер обеспечения ставки должен находиться в диапазоне от 1 до 50")]
         public int? PercentBid { get; set; }
 
         [Display(Name = "Дата начала торгов")]

@@ -1,4 +1,4 @@
-using DataAccessLogic;
+﻿using DataAccessLogic;
 using DataAccessLogic.DatabaseModels;
 using DataAccessLogic.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -12,14 +12,14 @@ using System.Threading.Tasks;
 
 namespace AuctionUpdateService.Services
 {
-    internal class RequestDateService : BaseScopedService
+    internal class ActiveAuctionsService : BaseScopedService
     {
         private readonly ILogger<RequestDateService> logger;
         private readonly ApplicationContext context;
         private static readonly string cronExp = "* * * * *";
 
-        public RequestDateService(
-            ILogger<RequestDateService> logger, 
+        public ActiveAuctionsService(
+            ILogger<RequestDateService> logger,
             ApplicationContext context) : base(logger, cronExp)
         {
             this.logger = logger;
@@ -33,22 +33,31 @@ namespace AuctionUpdateService.Services
             {
                 DateTime currentDate = DateTime.Now;
                 List<AuctionLot> lotsToUpdate = await context.AuctionLots
-                    .Where(lot => lot.AppStartDate != null && lot.AppEndDate != null && 
+                    .Include(lot => lot.Bids)
+                    .Where(lot => 
                     (
-                        (lot.Status == LotStatus.Applications && lot.AppEndDate <= currentDate) || 
-                        (lot.Status == LotStatus.Published && lot.AppStartDate <= currentDate)
-                    )
+                        (lot.Status == LotStatus.ApplicationsView || lot.Status == LotStatus.Published) &&
+                        (lot.StartDate <= currentDate)
+                    ) ||
+                    (lot.Status == LotStatus.Active && lot.EndDate <= currentDate)
                     ).ToListAsync();
 
                 foreach (AuctionLot lot in lotsToUpdate)
                 {
-                    if (lot.Status == LotStatus.Applications)
+                    if (lot.Status == LotStatus.ApplicationsView || lot.Status == LotStatus.Published)
                     {
-                        lot.Status = LotStatus.ApplicationsView;
+                        lot.Status = LotStatus.Active;
                     }
-                    if (lot.Status == LotStatus.Published)
+                    if (lot.Status == LotStatus.Active)
                     {
-                        lot.Status = LotStatus.Applications;
+                        if (lot.Bids.Count > 0)
+                        {
+                            lot.Status = LotStatus.Contract;
+                        }
+                        else
+                        {
+                            lot.Status = LotStatus.NotHeld;
+                        }
                     }
                 }
                 await context.SaveChangesAsync();

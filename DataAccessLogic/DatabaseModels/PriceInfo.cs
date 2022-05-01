@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccessLogic.DatabaseModels
 {
@@ -14,7 +13,6 @@ namespace DataAccessLogic.DatabaseModels
         public int BidStep { get; set; }
         [Required(ErrorMessage = "Укажите конечную цену, за которую готовы отдать товар без торгов")]
         public int FinalPrice { get; set; }
-        [Required(ErrorMessage = "Укажите процент обсепечения ставки")]
-        public int PercentBid { get; set; }
+        public int? PercentBid { get; set; }
     }
 }

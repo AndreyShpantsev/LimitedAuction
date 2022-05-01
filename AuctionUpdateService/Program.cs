@@ -1,4 +1,3 @@
-using AuctionUpdateService.Interfaces;
 using AuctionUpdateService.Services;
 using DataAccessLogic;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +20,8 @@ namespace AuctionUpdateService
                     string connectionString = hostContext.Configuration["ConnectionStrings:AuctionDB"];
                     services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connectionString));
                     services.AddHostedService<AuctionUpdateBackgroundService<RequestDateService>>();
+                    services.AddHostedService<AuctionUpdateBackgroundService<ActiveAuctionsService>>();
+                    services.AddScoped<ActiveAuctionsService>();
                     services.AddScoped<RequestDateService>();
                 });
     }

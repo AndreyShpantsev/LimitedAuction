@@ -1,4 +1,5 @@
 ﻿using DataAccessLogic.DatabaseModels;
+using DataAccessLogic.Enums;
 using DataAccessLogic.HelperServices;
 using DataAccessLogic.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -50,7 +51,7 @@ namespace WebApplicationTechSale.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateLot(CreateLotViewModel model)
         {
-            if (ModelState.IsValid && model.RateSecurity == true)
+            if (ModelState.IsValid)
             {
                 AuctionLot toAdd = new AuctionLot
                 {
@@ -62,76 +63,25 @@ namespace WebApplicationTechSale.Controllers
                     Description = model.Description,
                     StartDate = model.StartDate.Value,
                     EndDate = model.EndDate.Value,
+                    TypeOfAuction = model.TypeOfAuction,
+                    AppStartDate = model.AppStartDate,
+                    AppEndDate = model.AppEndDate,
                     PriceInfo = new PriceInfo
                     {
                         StartPrice = model.StartPrice.Value,
                         CurrentPrice = model.StartPrice.Value,
                         BidStep = model.BidStep.Value,
                         FinalPrice = model.FinalPrice.Value,
-                        PercentBid = model.PercentBid.Value
+                        PercentBid = model.PercentBid
                     }
                 };
            
-
                 string dbPhotoPath = $"/images/{User.Identity.Name}/{model.Name}/photo{Path.GetExtension(model.Photo.FileName)}";
                 toAdd.PhotoSrc = dbPhotoPath;
 
                 try
                 {
                    await lotLogic.Create(toAdd);
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError(string.Empty, ex.Message);
-                    return View(model);
-                }
-
-                string physicalDirectory = Path.GetDirectoryName($"{environment.WebRootPath + dbPhotoPath}");
-                if (!Directory.Exists(physicalDirectory))
-                {
-                    Directory.CreateDirectory(physicalDirectory);
-                }
-
-                using (FileStream fs = new FileStream($"{environment.WebRootPath + dbPhotoPath}", FileMode.Create))
-                {
-                    await model.Photo.CopyToAsync(fs);
-                }
-
-                return View("Redirect", new RedirectModel
-                {
-                    InfoMessages = RedirectionMessageProvider.LotCreatedMessages(),
-                    RedirectUrl = "/Home/Lots",
-                    SecondsToRedirect = ApplicationConstantsProvider.GetMaxRedirectionTime()
-                });
-            }
-            else if (ModelState.IsValid && model.RateSecurity == false)
-            {
-                AuctionLot toAdd = new AuctionLot
-                {
-                    Name = model.Name,
-                    User = new User
-                    {
-                        UserName = User.Identity.Name
-                    },
-                    Description = model.Description,
-                    StartDate = model.StartDate.Value,
-                    EndDate = model.EndDate.Value,
-                    PriceInfo = new PriceInfo
-                    {
-                        StartPrice = model.StartPrice.Value,
-                        CurrentPrice = model.StartPrice.Value,
-                        BidStep = model.BidStep.Value,
-                        FinalPrice = model.FinalPrice.Value,
-                    }
-                };
-
-
-                string dbPhotoPath = $"/images/{User.Identity.Name}/{model.Name}/photo{Path.GetExtension(model.Photo.FileName)}";
-                toAdd.PhotoSrc = dbPhotoPath;
-
-                try
-                {
-                    await lotLogic.Create(toAdd);
                 }
                 catch (Exception ex)
                 {
@@ -332,11 +282,11 @@ namespace WebApplicationTechSale.Controllers
             if (!string.IsNullOrWhiteSpace(id))
             {
                 AuctionLot lotToEdit = (await lotLogic.Read(new AuctionLot { Id = id })).First();
-                if (lotToEdit.Status == LotStatusProvider.GetRejectedStatus()
-                    || lotToEdit.Status == LotStatusProvider.GetAcceptedStatus()
+                if (lotToEdit.Status == LotStatus.Rejected
+                    || lotToEdit.Status == LotStatus.Published
                     && DateTime.Now < lotToEdit.StartDate)
                 {
-                    if (lotToEdit.Status == LotStatusProvider.GetRejectedStatus())
+                    if (lotToEdit.Status == LotStatus.Rejected)
                     {
                         ViewBag.RejectNote = "Причина, по которой ваш лот не был опубликован: " 
                             + lotToEdit.Note.Text;
@@ -386,7 +336,7 @@ namespace WebApplicationTechSale.Controllers
                     Description = model.Description,
                     StartDate = model.StartDate.Value,
                     EndDate = model.EndDate.Value,
-                    Status = LotStatusProvider.GetOnModerationStatus(),
+                    Status = LotStatus.OnModeration,
                     PriceInfo = new PriceInfo
                     {
                         StartPrice = model.StartPrice.Value,

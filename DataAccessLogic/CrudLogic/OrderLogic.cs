@@ -1,11 +1,10 @@
 ﻿using DataAccessLogic.DatabaseModels;
-using DataAccessLogic.HelperServices;
+using DataAccessLogic.Enums;
 using DataAccessLogic.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DataAccessLogic.CrudLogic
@@ -40,7 +39,7 @@ namespace DataAccessLogic.CrudLogic
             model.User = user;
             model.AuctionLot = auctionLot;
             auctionLot.EndDate = DateTime.Now;
-            auctionLot.Status = LotStatusProvider.GetSoldStatus();
+            auctionLot.Status = LotStatus.Sold;
 
             context.AuctionLots.Update(auctionLot);
             await context.Orders.AddAsync(model);

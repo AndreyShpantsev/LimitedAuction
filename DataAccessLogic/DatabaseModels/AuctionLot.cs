@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DataAccessLogic.Enums;
+using System;
 using System.Collections.Generic;
 
 namespace DataAccessLogic.DatabaseModels
@@ -11,9 +12,8 @@ namespace DataAccessLogic.DatabaseModels
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string PhotoSrc { get; set; }
-        public string Status { get; set; }
-
-        public string TypeOfAuction { get; set; }
+        public LotStatus? Status { get; set; }
+        public TypeOfAuction? TypeOfAuction { get; set; }
         public DateTime? AppStartDate { get; set; }
         public DateTime? AppEndDate { get; set;  }
 

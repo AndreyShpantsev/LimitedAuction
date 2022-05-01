@@ -1,4 +1,5 @@
 ﻿using DataAccessLogic.DatabaseModels;
+using DataAccessLogic.Enums;
 using DataAccessLogic.HelperServices;
 using DataAccessLogic.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -31,12 +32,12 @@ namespace WebApplicationTechSale.Controllers
         {
             List<AuctionLot> lotsToDisplay = await lotLogic.GetPage(page, new AuctionLot
             {
-                Status = LotStatusProvider.GetAcceptedStatus()
+                Status = LotStatus.Published
             });
 
             int lotsCount = await lotLogic.GetCount(new AuctionLot
             {
-                Status = LotStatusProvider.GetAcceptedStatus()
+                Status = LotStatus.Published
             });
 
             return View(new AuctionLotsViewModel()
