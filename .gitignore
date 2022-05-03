@@ -341,3 +341,4 @@ healthchecksdb
 
 Migrations/
 Migrations/*
+/WebApplicationTechSale/wwwroot/images

@@ -20,12 +20,18 @@
             <p>
                 <a asp-action="MyOrders" asp-controller="Account" class="btn btn-lg btn-dark d-block rounded-0">Мои покупки</a>
             </p>
+            <p>
+                <a asp-action="" asp-controller="" class="btn btn-lg btn-dark d-block rounded-0">Мои заявки</a>
+            </p>
+            <p>
+                <a asp-action="" asp-controller="" class="btn btn-lg btn-dark d-block rounded-0">Мои контракты</a>
+            </p>
         }
         @if (User.IsInRole("regular user") || User.IsInRole("admin"))
         {
             <p>
                 <a asp-action="Money" asp-controller="Account" class="btn btn-lg btn-dark d-block rounded-0">Операции со счетом</a>
-            </p>          
+            </p>
         }
         <p>
             <a asp-action="ChangePassword" asp-controller="Account" class="btn btn-lg btn-dark d-block rounded-0">Изменить пароль</a>

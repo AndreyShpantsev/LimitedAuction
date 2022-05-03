@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.1.31911.260
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplicationTechSale", "WebApplicationTechSale\WebApplicationTechSale.csproj", "{40F50AAA-FB41-449E-933C-A32CD21370FB}"
 EndProject
@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccessLogic", "DataAcce
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TechSaleTelegramBot", "TechSaleTelegramBot\TechSaleTelegramBot.csproj", "{79E28554-3549-4585-B7FA-CA3E6A77D2AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuctionUpdateService", "AuctionUpdateService\AuctionUpdateService.csproj", "{BD8D8CD0-BF9E-4D86-88DB-7366E6D3E7A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuctionUpdateService", "AuctionUpdateService\AuctionUpdateService.csproj", "{BD8D8CD0-BF9E-4D86-88DB-7366E6D3E7A2}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C694C21D-8641-4BF4-A0D7-777401A09270} = {C694C21D-8641-4BF4-A0D7-777401A09270}
 	EndProjectSection

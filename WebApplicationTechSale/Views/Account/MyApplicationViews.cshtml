@@ -1,0 +1,44 @@
+﻿@using DataAccessLogic.DatabaseModels
+@using System.Globalization
+
+@model 
+@{
+    ViewData["Title"] = "Список поданных заявок";
+}
+
+<div class="col-lg-10 col-xl-9">
+    <h5 class="py-3 text-center">Список поданных заявок</h5>
+    <div class="table-responsive">
+        <table class="table table-bordered border-light text-center">
+            <thead>
+                <tr>
+                    <th scope="col">Имя пользователя</th>
+                    <th scope="col">Допуск до аукциона</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Transaction tran in Model.TransactionHistory)
+                {
+                    <tr>
+                        <td>
+                            //имя пользователя
+                        </td>
+                        <td>
+                            <div class="form-check">
+                                <input asp-for="" type="radio" value="Open" class="form-check-input" id="acceptBtn" checked="checked" />
+                                <label class="form-check-label" for="acceptBtn">Да</label>
+                            </div>
+                            <div class="form-check">
+                                <input asp-for="" type="radio" value="Closed" class="form-check-input" id="rejectBtn" />
+                                <label class="form-check-label" for="rejectBtn">Нет</label>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-lg-4 col-xl-3">
+        <a class="btn btn-lg btn-dark rounded-0 d-block">Сохранить</a>
+    </div>
+</div>

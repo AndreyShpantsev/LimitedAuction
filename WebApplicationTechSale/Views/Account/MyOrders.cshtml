@@ -7,25 +7,26 @@
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 my-lg-2">
     @foreach (Order order in Model)
     {
-<div class="col">
-    <div class="card h-100 rounded-0">
-        <a><img src="@order.AuctionLot.PhotoSrc" class="card-img-top list-lot rounded-0" alt="..."></a>
-        <div class="card-body">
-            <a class="auction-link" asp-action="OpenLot" asp-controller="User" asp-route-id="@order.AuctionLot.Id">
-                <h5 class="card-title">@order.AuctionLot.Name</h5>
-            </a>
+        <div class="col">
+            <div class="card h-100 rounded-0">
+                <a><img src="@order.AuctionLot.PhotoSrc" class="card-img-top list-lot rounded-0" alt="..."></a>
+                <div class="card-body">
+                    <a class="auction-link" asp-action="OpenLot" asp-controller="User" asp-route-id="@order.AuctionLot.Id">
+                        <h5 class="card-title">@order.AuctionLot.Name</h5>
+                    </a>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><b>Торги окончены: </b>@order.AuctionLot.EndDate.ToShortDateString()</li>
+                    @if (order.AuctionLot.Status == DataAccessLogic.Enums.LotStatus.Sold)
+                    {
+                        <li class="list-group-item"><b>Цена закрытия: </b>@order.AuctionLot.PriceInfo.FinalPrice руб.</li>
+                    }
+                    else
+                    {
+                        <li class="list-group-item"><b>Цена закрытия: </b>@order.AuctionLot.PriceInfo.CurrentPrice руб.</li>
+                    }
+                </ul>
+            </div>
         </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item"><b>Торги окончены: </b>@order.AuctionLot.EndDate.ToShortDateString()</li>
-            @if (order.AuctionLot.Status == DataAccessLogic.Enums.LotStatus.Sold)
-            {
-                <li class="list-group-item"><b>Цена закрытия: </b>@order.AuctionLot.PriceInfo.FinalPrice руб.</li>
-            }
-            else
-            {
-                <li class="list-group-item"><b>Цена закрытия: </b>@order.AuctionLot.PriceInfo.CurrentPrice руб.</li>
-            }
-        </ul>
-    </div>
-</div>}
+    }
 </div>

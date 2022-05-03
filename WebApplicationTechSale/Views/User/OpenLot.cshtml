@@ -61,7 +61,7 @@
             }
             else
             {
-                if (Model.Bids.Count > 0 && Model.Bids.First().User.UserName == User.Identity.Name 
+                if (Model.Bids.Count > 0 && Model.Bids.First().User.UserName == User.Identity.Name
                 && Model.Status != DataAccessLogic.Enums.LotStatus.Sold)
                 {
                     <h5 class="text-center">Поздравляем! Вы победили в торгах</h5>
@@ -80,15 +80,21 @@
             }
         </div>
     </div>
-    @if (DateTime.Now < Model.StartDate && User.Identity.Name == Model.User.UserName)
+    @if (Model.Status == DataAccessLogic.Enums.LotStatus.ApplicationsView && User.Identity.Name == Model.User.UserName)
     {
         <div class="col-lg-4 col-xl-3">
-            <a class="btn btn-lg btn-dark rounded-0 d-block">Редактировать</a>
+            <a class="btn btn-lg btn-dark rounded-0 d-block">Рассмотреть заявки</a>
         </div>
     }
-    else if (DateTime.Now > Model.StartDate 
+    else if (Model.Status == DataAccessLogic.Enums.LotStatus.Applications)
+    {
+        <div class="col-lg-4 col-xl-3">
+            <a class="btn btn-lg btn-dark rounded-0 d-block">Подать заявку</a>
+        </div>
+    }
+    else if (DateTime.Now > Model.StartDate
     && DateTime.Now < Model.EndDate
-    && User.Identity.Name != Model.User.UserName 
+    && User.Identity.Name != Model.User.UserName
     && Model.Status != DataAccessLogic.Enums.LotStatus.Sold)
     {
         <div class="col-lg-4 col-xl-2">
