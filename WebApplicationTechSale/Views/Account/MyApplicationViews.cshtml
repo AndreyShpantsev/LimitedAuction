@@ -1,7 +1,7 @@
 ﻿@using DataAccessLogic.DatabaseModels
 @using System.Globalization
 
-@model 
+@model List<ApplicationAcceptViewModel>
 @{
     ViewData["Title"] = "Список поданных заявок";
 }
@@ -17,23 +17,9 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (Transaction tran in Model.TransactionHistory)
+                @foreach (ApplicationAcceptViewModel app in Model)
                 {
-                    <tr>
-                        <td>
-                            //имя пользователя
-                        </td>
-                        <td>
-                            <div class="form-check">
-                                <input asp-for="" type="radio" value="Open" class="form-check-input" id="acceptBtn" checked="checked" />
-                                <label class="form-check-label" for="acceptBtn">Да</label>
-                            </div>
-                            <div class="form-check">
-                                <input asp-for="" type="radio" value="Closed" class="form-check-input" id="rejectBtn" />
-                                <label class="form-check-label" for="rejectBtn">Нет</label>
-                            </div>
-                        </td>
-                    </tr>
+                    await Html.RenderPartialAsync("ApplicationAccept", app);
                 }
             </tbody>
         </table>

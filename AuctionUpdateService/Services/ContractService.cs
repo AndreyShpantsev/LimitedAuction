@@ -33,21 +33,12 @@ namespace AuctionUpdateService.Services
             try
             {
                 List<AuctionLot> completedLots = await context.AuctionLots
-                    .Where(lot => lot.Status == LotStatus.Contract)
-                    .Join(
-                        context.Contracts,
-                        lot => lot.Id,
-                        cntr => cntr.AuctionLotId.DefaultIfEmpty(),
-                        (lot, cntr) => new
-                        {
-                            HasContract = cntr.AuctionLotId != null,
-                            AuctionLot = lot
-                        })
-                    .Where(res => res.HasContract)
-                    .Select(res => res.AuctionLot)
-                    .ToListAsync();
+                    .Where(lot => 
+                        lot.Status == LotStatus.Contract &&
+                        !context.Contracts.Any(cntr => cntr.AuctionLotId == lot.Id)
+                    ).ToListAsync();
 
-                foreach (AuctionLot lot in completedLots)
+                foreach (var lot in completedLots)
                 {
                     await CreateContract(lot);
                 }
