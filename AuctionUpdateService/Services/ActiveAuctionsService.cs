@@ -1,4 +1,5 @@
-﻿using DataAccessLogic;
+﻿using AuctionUpdateService.Interfaces;
+using DataAccessLogic;
 using DataAccessLogic.DatabaseModels;
 using DataAccessLogic.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -12,21 +13,21 @@ using System.Threading.Tasks;
 
 namespace AuctionUpdateService.Services
 {
-    internal class ActiveAuctionsService : BaseScopedService
+    internal class ActiveAuctionsService : BaseScopedService, IAuctionUpdater
     {
-        private readonly ILogger<RequestDateService> logger;
+        private readonly ILogger<ActiveAuctionsService> logger;
         private readonly ApplicationContext context;
         private static readonly string cronExp = "* * * * *";
 
         public ActiveAuctionsService(
-            ILogger<RequestDateService> logger,
+            ILogger<ActiveAuctionsService> logger,
             ApplicationContext context) : base(logger, cronExp)
         {
             this.logger = logger;
             this.context = context;
         }
 
-        protected override async Task UpdateAuctions(CancellationToken cancellationToken)
+        public async Task UpdateAuctions(CancellationToken cancellationToken)
         {
             IDbContextTransaction tran = await context.Database.BeginTransactionAsync();
             try
@@ -36,7 +37,10 @@ namespace AuctionUpdateService.Services
                     .Include(lot => lot.Bids)
                     .Where(lot => 
                     (
-                        (lot.Status == LotStatus.ApplicationsView || lot.Status == LotStatus.Published) &&
+                        (
+                            (lot.TypeOfAuction == TypeOfAuction.Closed && lot.Status == LotStatus.ApplicationsView) || 
+                            (lot.TypeOfAuction == TypeOfAuction.Open && lot.Status == LotStatus.Published)
+                        ) &&
                         (lot.StartDate <= currentDate)
                     ) ||
                     (lot.Status == LotStatus.Active && lot.EndDate <= currentDate)
@@ -67,6 +71,19 @@ namespace AuctionUpdateService.Services
             {
                 await tran.RollbackAsync();
                 logger.LogError("Error: {0}", ex.Message);
+            }
+        }
+
+        public override async Task ExecuteAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                await WaitForNextSchedule(cronExp);
+                await UpdateAuctions(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message);
             }
         }
     }

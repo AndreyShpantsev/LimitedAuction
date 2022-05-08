@@ -13,7 +13,8 @@ namespace DataAccessLogic
         public DbSet<Order> Orders { get; set; } 
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
-
+        public DbSet<Application> Applications { get; set; }
+        public DbSet<Contract> Contracts { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base (options)

@@ -1,3 +1,4 @@
+using AuctionUpdateService.Interfaces;
 using DataAccessLogic;
 using DataAccessLogic.DatabaseModels;
 using DataAccessLogic.Enums;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace AuctionUpdateService.Services
 {
-    internal class RequestDateService : BaseScopedService
+    internal class RequestDateService : BaseScopedService, IAuctionUpdater
     {
         private readonly ILogger<RequestDateService> logger;
         private readonly ApplicationContext context;
@@ -26,14 +27,15 @@ namespace AuctionUpdateService.Services
             this.context = context;
         }
 
-        protected override async Task UpdateAuctions(CancellationToken cancellationToken)
+        public async Task UpdateAuctions(CancellationToken cancellationToken)
         {
             IDbContextTransaction tran = await context.Database.BeginTransactionAsync();
             try
             {
                 DateTime currentDate = DateTime.Now;
                 List<AuctionLot> lotsToUpdate = await context.AuctionLots
-                    .Where(lot => lot.AppStartDate != null && lot.AppEndDate != null && 
+                    .Where(lot => lot.TypeOfAuction == TypeOfAuction.Closed &&
+                    lot.AppStartDate != null && lot.AppEndDate != null && 
                     (
                         (lot.Status == LotStatus.Applications && lot.AppEndDate <= currentDate) || 
                         (lot.Status == LotStatus.Published && lot.AppStartDate <= currentDate)
@@ -58,6 +60,19 @@ namespace AuctionUpdateService.Services
             {
                 await tran.RollbackAsync();
                 logger.LogError("Error: {0}", ex.Message);
+            }
+        }
+
+        public override async Task ExecuteAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                await WaitForNextSchedule(cronExp);
+                await UpdateAuctions(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message);
             }
         }
     }

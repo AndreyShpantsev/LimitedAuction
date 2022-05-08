@@ -21,8 +21,10 @@ namespace AuctionUpdateService
                     services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connectionString));
                     services.AddHostedService<AuctionUpdateBackgroundService<RequestDateService>>();
                     services.AddHostedService<AuctionUpdateBackgroundService<ActiveAuctionsService>>();
+                    services.AddHostedService<AuctionUpdateBackgroundService<ContractService>>();
                     services.AddScoped<ActiveAuctionsService>();
                     services.AddScoped<RequestDateService>();
+                    services.AddScoped<ContractService>();
                 });
     }
 }

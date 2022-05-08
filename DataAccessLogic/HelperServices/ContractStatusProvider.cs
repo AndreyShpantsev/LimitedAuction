@@ -19,7 +19,7 @@ namespace DataAccessLogic.HelperServices
 
         private static string GetPatricipantSigning()
         {
-            return "Ожидает подписания участника";
+            return "Ожидает подписания участником";
         }
 
         private static string GetSellerSigning()

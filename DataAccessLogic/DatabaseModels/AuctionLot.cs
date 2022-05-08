@@ -27,5 +27,6 @@ namespace DataAccessLogic.DatabaseModels
         public List<SavedList> SavedLists { get; set; }
 
         public List<Bid> Bids { get; set; }
+        public List<Application> Applications { get; set; }
     }
 }

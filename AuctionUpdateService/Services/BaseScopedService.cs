@@ -2,8 +2,6 @@
 using Cronos;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,20 +18,9 @@ namespace AuctionUpdateService.Services
             this.cronExp = cronExp;
         }
 
-        public async Task ExecuteAsync(CancellationToken cancellationToken)
-        {
-            try
-            {
-                await WaitForNextSchedule(cronExp);
-                await UpdateAuctions(cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex.Message);
-            }
-        }
+        public abstract Task ExecuteAsync(CancellationToken cancellationToken);
 
-        private async Task WaitForNextSchedule(string cronExpression)
+        protected async Task WaitForNextSchedule(string cronExpression)
         {
             var parsedExp = CronExpression.Parse(cronExpression);
             var currentUtcTime = DateTimeOffset.UtcNow.UtcDateTime;
@@ -44,7 +31,5 @@ namespace AuctionUpdateService.Services
 
             await Task.Delay(delay);
         }
-
-        protected abstract Task UpdateAuctions(CancellationToken cancellationToken);
     }
 }
