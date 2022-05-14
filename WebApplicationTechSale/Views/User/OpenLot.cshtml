@@ -42,7 +42,7 @@
 <div class="row justify-content-center mt-4">
     <div class="col-lg-6 col-xl-5">
         <div class="row mb-4 mb-xl-0 h-100">
-            @if (Model.Status == LotStatus.Published)
+            @if (Model.Status == LotStatus.Published || Model.Status == LotStatus.ApplicationsView)
             {
                 <div class="col-sm-7 d-flex align-items-center">
                     <h5>Начало: <span>@Model.StartDate.ToString("dd.MM.yy")</span></h5>
@@ -93,7 +93,7 @@
     )
     {
         <div class="col-lg-4 col-xl-3">
-            <a asp-action="ViewApps" 
+            <a asp-action="AuctionAppList" 
                 asp-controller="User" 
                 asp-route-lotId="@Model.Id"
                 class="btn btn-lg btn-dark rounded-0 d-block"
@@ -102,7 +102,8 @@
     }
     @if (
         Model.Status == DataAccessLogic.Enums.LotStatus.Applications &&
-        User.Identity.Name != Model.User.UserName
+        User.Identity.Name != Model.User.UserName &&
+        !Model.Applications.Any(app => app.User.UserName == User.Identity.Name)
     )
     {
         <div class="col-lg-4 col-xl-3">

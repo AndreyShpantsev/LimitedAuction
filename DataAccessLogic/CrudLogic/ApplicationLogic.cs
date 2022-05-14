@@ -67,14 +67,46 @@ namespace DataAccessLogic.CrudLogic
             throw new NotImplementedException();
         }
 
-        public Task<List<Application>> Read(Application model)
+        public async Task<List<Application>> Read(Application model)
         {
-            throw new NotImplementedException();
+            return await context.Applications
+                .Include(app => app.User)
+                .Include(app => app.AuctionLot)
+                .Where(app => model == null ||
+                    app.AuctionLotId == model.AuctionLotId ||
+                    app.UserId == model.UserId)
+                .OrderByDescending(model => model.CreatedAt)
+                .ToListAsync();
         }
 
-        public Task Update(Application model)
+        public async Task Update(Application model)
         {
-            throw new NotImplementedException();
+            if (model == null)
+            {
+                throw new Exception("Заявка не определена");
+            }
+
+            if (model.Id == null)
+            {
+                throw new Exception("Идентификатор заявки не определен");
+            }
+
+            Application dbApp = await context
+                .Applications.FirstOrDefaultAsync(app => app.Id == model.Id);
+
+            if (dbApp == null)
+            {
+                throw new Exception("Заявка не найдена");
+            }
+
+            if (dbApp.Status != ApplicationStatus.Submitted)
+            {
+                throw new Exception("Заявка находится в некорректном статусе");
+            }
+
+            dbApp.Status = model.Status;
+
+            await context.SaveChangesAsync();
         }
     }
 }

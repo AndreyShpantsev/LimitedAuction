@@ -1,0 +1,50 @@
+﻿@using DataAccessLogic.DatabaseModels
+@using System.Globalization
+
+@model ViewAppsViewModel
+@{
+    ViewData["Title"] = "Рассмотрение заявок";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-9">
+        <form method="post" asp-action="AuctionAppList" asp-controller="User">
+            @Html.HiddenFor(model => model.AuctionLotId)
+            <h5 class="py-3 text-center">Список поданных заявок</h5>
+            <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+            <div class="table-responsive">
+                <table class="table table-bordered border-light">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="w-75">Имя пользователя</th>
+                            <th scope="col" class="w-25 text-center">Допуск до аукциона</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int appIndex = 0; appIndex < Model.AppsForView.Count; appIndex++)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="hidden" asp-for="AppsForView[appIndex].ApplicationId">
+                                    <input type="hidden" asp-for="AppsForView[appIndex].AppUserName">
+                                    @Model.AppsForView[appIndex].AppUserName
+                                </td>
+                                <td class="text-center">
+                                    <div class="form-check form-switch form-check-inline">
+                                        <input asp-for="AppsForView[appIndex].IsAccepted" class="form-check-input" type="checkbox" id="appAcceptSwitch">
+                                        <label class="form-check-label" for="appAcceptSwitch">Принять заявку</label>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-lg btn-dark rounded-0">Сохранить результат рассмотрения</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

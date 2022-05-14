@@ -135,6 +135,11 @@ namespace WebApplicationTechSale.Controllers
                     AuctionLotId = id
                 });
 
+                lot.Applications = await appLogic.Read(new Application
+                {
+                    AuctionLotId = lot.Id
+                });
+
                 User user = await userManager.FindByNameAsync(User.Identity.Name);
 
                 SavedList userList = await savedListLogic.Read(user);
@@ -477,8 +482,91 @@ namespace WebApplicationTechSale.Controllers
             {
                 InfoMessages = RedirectionMessageProvider.ApplicationSended(),
                 RedirectUrl = $"/User/OpenLot/{model.AuctionLotId}",
-                SecondsToRedirect = ApplicationConstantsProvider.GetShortRedirectionTime()
+                SecondsToRedirect = ApplicationConstantsProvider.GetMaxRedirectionTime()
             });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MyOrders()
+        {
+            User user = await userManager.FindByNameAsync(User.Identity.Name);
+
+            List<Order> userOrders = await orderLogic.Read(new Order
+            {
+                User = new User
+                {
+                    UserName = user.UserName
+                }
+            });
+
+            return View(userOrders);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MyAppList()
+        {
+            string userId = User.Claims
+                .FirstOrDefault(uc => uc.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            List<Application> userApps = await appLogic.Read(new Application
+            {
+                UserId = userId
+            });
+
+            return View(userApps);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AuctionAppList(string lotId)
+        {
+            List<Application> appList = await appLogic.Read(new Application
+            {
+                AuctionLotId = lotId
+            });
+
+            List<ApplicationAcceptViewModel> appsForView =
+                appList.Select(app => new ApplicationAcceptViewModel
+                {
+                    ApplicationId = app.Id,
+                    AppUserName = app.User.UserName,
+                    IsAccepted = false
+                }).ToList();
+
+            return View(new ViewAppsViewModel
+            {
+                AuctionLotId = lotId,
+                AppsForView = appsForView
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AuctionAppList(ViewAppsViewModel model)
+        {
+            try
+            {
+                foreach (ApplicationAcceptViewModel appView in model.AppsForView)
+                {
+                    await appLogic.Update(new Application
+                    {
+                        Id = appView.ApplicationId,
+                        Status = appView.IsAccepted
+                            ? ApplicationStatus.Accepted
+                            : ApplicationStatus.Rejected
+                    });
+                }
+                return View("Redirect", new RedirectModel
+                {
+                    InfoMessages = RedirectionMessageProvider.ApplicationSended(),
+                    RedirectUrl = $"/User/OpenLot/{model.AuctionLotId}",
+                    SecondsToRedirect = ApplicationConstantsProvider.GetMaxRedirectionTime()
+                });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
         }
     }
 }

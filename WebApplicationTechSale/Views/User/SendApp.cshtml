@@ -23,6 +23,7 @@
                                 <p class="h5">Продавец:</p>
                                 <p class="mb-0">
                                     @Html.DisplayFor(model => model.Seller)
+                                    @Html.HiddenFor(model => model.Seller)
                                 </p>
                             </div>
                         </li>
@@ -31,6 +32,7 @@
                                 <p class="h5">Название:</p>
                                 <p class="mb-0">
                                     @Html.DisplayFor(model => model.AuctionName)
+                                    @Html.HiddenFor(model => model.AuctionName)
                                 </p>
                             </div>
                         </li>
@@ -39,6 +41,7 @@
                                 <p class="h5">Описание:</p>
                                 <p class="mb-0">
                                     @Html.DisplayFor(model => model.AuctionDescription)
+                                    @Html.HiddenFor(model => model.AuctionDescription)
                                 </p>
                             </div>
                         </li>
@@ -47,6 +50,7 @@
                                 <p class="h5">Начальная цена:</p>
                                 <p class="mb-0">
                                     @Html.DisplayFor(model => model.StartPrice) руб.
+                                    @Html.HiddenFor(model => model.StartPrice)
                                 </p>
                             </div>
                         </li>
@@ -55,6 +59,7 @@
                                 <p class="h5">Дата начала подачи заявок:</p>
                                 <p class="mb-0">
                                     @Html.DisplayFor(model => model.AppStartDate)
+                                    @Html.HiddenFor(model => model.AppStartDate)
                                 </p>
                             </div>
                         </li>
@@ -63,6 +68,7 @@
                                 <p class="h5">Дата окончания подачи заявок:</p>
                                 <p class="mb-0">
                                     @Html.DisplayFor(model => model.AppEndDate)
+                                    @Html.HiddenFor(model => model.AppEndDate)
                                 </p>
                             </div>
                         </li>
@@ -71,6 +77,7 @@
                                 <p class="h5">Дата начала торгов:</p>
                                 <p class="mb-0">
                                     @Html.DisplayFor(model => model.AuctionStartDate)
+                                    @Html.HiddenFor(model => model.AuctionStartDate)
                                 </p>
                             </div>
                         </li>
@@ -79,6 +86,7 @@
                                 <p class="h5">Дата окончания торгов:</p>
                                 <p class="mb-0">
                                     @Html.DisplayFor(model => model.AuctionEndDate)
+                                    @Html.HiddenFor(model => model.AuctionEndDate)
                                 </p>
                             </div>
                         </li>

@@ -18,10 +18,10 @@
                 <a asp-action="Update" asp-controller="Account" class="btn btn-lg btn-dark d-block rounded-0">Изменить учетные данные</a>
             </p>
             <p>
-                <a asp-action="MyOrders" asp-controller="Account" class="btn btn-lg btn-dark d-block rounded-0">Мои покупки</a>
+                <a asp-action="MyOrders" asp-controller="User" class="btn btn-lg btn-dark d-block rounded-0">Мои покупки</a>
             </p>
             <p>
-                <a asp-action="" asp-controller="" class="btn btn-lg btn-dark d-block rounded-0">Мои заявки</a>
+                <a asp-action="MyAppList" asp-controller="User" class="btn btn-lg btn-dark d-block rounded-0">Мои заявки</a>
             </p>
             <p>
                 <a asp-action="" asp-controller="" class="btn btn-lg btn-dark d-block rounded-0">Мои контракты</a>
@@ -90,7 +90,11 @@
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         @foreach (AuctionLot auctionLot in Model.PersonalLotsList.AuctionLots)
         {
-            if (auctionLot.Status == LotStatus.Published || auctionLot.Status == LotStatus.Applications)
+            if (
+                auctionLot.Status == LotStatus.Published || 
+                auctionLot.Status == LotStatus.Applications ||
+                auctionLot.Status == LotStatus.ApplicationsView
+            )
             {
                 await Html.RenderPartialAsync("AcceptedLot", auctionLot);
             }

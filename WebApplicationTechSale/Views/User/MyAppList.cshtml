@@ -1,0 +1,48 @@
+﻿@using DataAccessLogic.DatabaseModels
+@using DataAccessLogic.HelperServices
+@using DataAccessLogic.Enums
+
+@model List<Application>
+
+@{ ViewData["Title"] = "Список заявок"; }
+<div class="col-lg-10 col-xl-9 d-flex align-items-center">
+    <div class="h4 my-0 pt-4 pb-0">Список поданных заявок</div>
+</div>
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 my-lg-2">
+    @foreach (Application app in Model)
+    {
+        <div class="col">
+            <div class="card h-100 rounded-0">
+                <div class="card-body">
+                    <a class="auction-link" asp-action="OpenLot" asp-controller="User" asp-route-id="@app.AuctionLot.Id">
+                        <h5 class="card-title">Аукцион: @app.AuctionLot.Name</h5>
+                    </a>
+                    <p class="card-text text-wrap mb-0">
+                        Статус аукциона: @LotStatusProvider.GetStatusOnRussian(app.AuctionLot.Status)
+                    </p>                
+                    <p class="card-text text-wrap mb-0">
+                        Статус заявки: @AppStatusProvider.GetStatusOnRussian(app.Status)
+                    </p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item px-0"><b>Стартовая цена: </b>@app.AuctionLot.PriceInfo.StartPrice руб.</li>
+                        @if (app.AuctionLot.Status == LotStatus.Applications)
+                        {
+                            <li class="list-group-item px-0">
+                                <b>Окончание подачи заявок: </b>
+                                @app.AuctionLot.AppEndDate?.ToString("dd.MM.yyyy HH:mm:ss")
+                            </li>
+                        }
+                        @if (app.AuctionLot.Status == LotStatus.ApplicationsView
+                        )
+                        {
+                            <li class="list-group-item px-0">
+                                <b>Дата начала торгов: </b>
+                                @app.AuctionLot.StartDate.ToString("dd.MM.yyyy HH:mm:ss")
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    }
+</div>

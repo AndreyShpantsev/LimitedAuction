@@ -23,18 +23,16 @@ namespace WebApplicationTechSale.Controllers
         private readonly ISavedLogic savedListLogic;
         private readonly IBot telegramBot;
         private readonly ICrudLogic<User> userLogic;
-        private readonly ICrudLogic<Order> orderLogic;
         private readonly ICrudLogic<Account> accountLogic;
         private readonly ICrudLogic<Transaction> transactionLogic;
 
         public AccountController(
-            IPagination<AuctionLot> lotLogic, 
+            IPagination<AuctionLot> lotLogic,
             ISavedLogic savedListLogic,
-            UserManager<User> userManager, 
-            SignInManager<User> signInManager, 
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
             IBot telegramBot,
-            ICrudLogic<User> userLogic, 
-            ICrudLogic<Order> orderLogic,
+            ICrudLogic<User> userLogic,
             ICrudLogic<Account> accountLogic,
             ICrudLogic<Transaction> transactionLogic
         )
@@ -45,7 +43,6 @@ namespace WebApplicationTechSale.Controllers
             this.savedListLogic = savedListLogic;
             this.telegramBot = telegramBot;
             this.userLogic = userLogic;
-            this.orderLogic = orderLogic;
             this.accountLogic = accountLogic;
             this.transactionLogic = transactionLogic;
         }
@@ -350,22 +347,6 @@ namespace WebApplicationTechSale.Controllers
                 return RedirectToAction("Personal", "Account");
             }
             return View(model);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> MyOrders()
-        {
-            User user = await userManager.FindByNameAsync(User.Identity.Name);
-
-            List<Order> userOrders = await orderLogic.Read(new Order
-            {
-                User = new User
-                {
-                    UserName = user.UserName
-                }
-            });
-
-            return View(userOrders);
         }
 
         [HttpGet]

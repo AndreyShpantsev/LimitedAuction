@@ -121,5 +121,15 @@ namespace WebApplicationTechSale.HelperServices
                     "допуске к участию в аукционе"
             };
         }
+
+        public static List<string> AppViewResultsSaved()
+        {
+            return new List<string>()
+            {
+                "Информация о рассмотрении заявок сохранена",
+                "После наступления даты начала аукциона участники, " +
+                "чьи заявки были приняты, смогут делать ставки на Ваш лот"
+            };
+        }
     }
 }
