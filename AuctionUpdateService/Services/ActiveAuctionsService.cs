@@ -17,11 +17,11 @@ namespace AuctionUpdateService.Services
     {
         private readonly ILogger<ActiveAuctionsService> logger;
         private readonly ApplicationContext context;
-        private static readonly string cronExp = "* * * * *";
+        private static readonly string cronExp = "20 * * * * *";
 
         public ActiveAuctionsService(
             ILogger<ActiveAuctionsService> logger,
-            ApplicationContext context) : base(logger, cronExp)
+            ApplicationContext context) : base(logger)
         {
             this.logger = logger;
             this.context = context;
@@ -38,8 +38,8 @@ namespace AuctionUpdateService.Services
                     .Where(lot => 
                     (
                         (
-                            (lot.TypeOfAuction == TypeOfAuction.Closed && lot.Status == LotStatus.ApplicationsView) || 
-                            (lot.TypeOfAuction == TypeOfAuction.Open && lot.Status == LotStatus.Published)
+                            lot.Status == LotStatus.ApplicationsView ||
+                            lot.Status == LotStatus.Published
                         ) &&
                         (lot.StartDate <= currentDate)
                     ) ||
@@ -48,9 +48,15 @@ namespace AuctionUpdateService.Services
 
                 foreach (AuctionLot lot in lotsToUpdate)
                 {
-                    if (lot.Status == LotStatus.ApplicationsView || lot.Status == LotStatus.Published)
+                    if (lot.Status == LotStatus.ApplicationsView && lot.StartDate <= currentDate)
+                    {
+                        lot.Status = LotStatus.NotHeld;
+                        continue;
+                    }
+                    if (lot.Status == LotStatus.Published)
                     {
                         lot.Status = LotStatus.Active;
+                        continue;
                     }
                     if (lot.Status == LotStatus.Active)
                     {
@@ -62,6 +68,7 @@ namespace AuctionUpdateService.Services
                         {
                             lot.Status = LotStatus.NotHeld;
                         }
+                        continue;
                     }
                 }
                 await context.SaveChangesAsync();

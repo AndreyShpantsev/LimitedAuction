@@ -1,0 +1,68 @@
+﻿@using DataAccessLogic.DatabaseModels
+@using DataAccessLogic.HelperServices
+@using DataAccessLogic.Enums
+
+@model List<Contract>
+
+@{ 
+    ViewData["Title"] = "Список контрактов"; 
+}
+
+<div class="col-lg-10 col-xl-9 d-flex align-items-center">
+    <div class="h4 my-0 pt-4 pb-0">Список контрактов</div>
+</div>
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 my-lg-2">
+    @foreach (Contract contract in Model)
+    {
+        <div class="col">
+            <div class="card h-100 rounded-0">
+                <div class="card-body">
+                    <a class="auction-link" asp-action="OpenLot" asp-controller="User" asp-route-id="@contract.AuctionLot.Id">
+                        <h5 class="card-title">Аукцион: @contract.AuctionLot.Name</h5>
+                    </a>
+                    <p class="card-text text-wrap mb-0">
+                        Тип контракта:
+                        @if (contract.Seller.UserName == User.Identity.Name) 
+                        {
+                            <span>Продажа</span>
+                        }
+                        @if (contract.Buyer.UserName == User.Identity.Name)
+                        {
+                            <span>Покупка</span>
+                        }
+                    </p>
+                    <p class="card-text text-wrap mb-0">
+                        Статус контракта: @ContractStatusProvider.GetStatusOnRussian(contract.Status)
+                    </p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item px-0"><b>Цена контракта: </b>@contract.Amount руб.</li>
+                        @if (contract.Seller.UserName == User.Identity.Name)
+                        {
+                            <li class="list-group-item px-0">
+                                <b>Покупатель: </b>
+                                @contract.Buyer.UserName
+                            </li>
+                        }
+                        @if (contract.Buyer.UserName == User.Identity.Name)
+                        {
+                            <li class="list-group-item px-0">
+                                <b>Продавец: </b>
+                                @contract.Seller.UserName
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="card-footer border-top-0 bg-white">
+                    <a 
+                        asp-action="OpenContract" 
+                        asp-controller="User" 
+                        asp-route-id="@contract.Id" 
+                        class="my-2 btn btn-lg btn-dark rounded-0 d-block"
+                    >
+                        Просмотр
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

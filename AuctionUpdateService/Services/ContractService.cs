@@ -17,11 +17,11 @@ namespace AuctionUpdateService.Services
     {
         private readonly ILogger<ContractService> logger;
         private readonly ApplicationContext context;
-        private static readonly string cronExp = "* * * * *";
+        private static readonly string cronExp = "30 * * * * *";
 
         public ContractService(
             ILogger<ContractService> logger,
-            ApplicationContext context) : base(logger, cronExp)
+            ApplicationContext context) : base(logger)
         {
             this.logger = logger;
             this.context = context;

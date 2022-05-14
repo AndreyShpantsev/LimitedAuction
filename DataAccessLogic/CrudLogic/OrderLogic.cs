@@ -39,14 +39,14 @@ namespace DataAccessLogic.CrudLogic
             model.User = user;
             model.AuctionLot = auctionLot;
             auctionLot.EndDate = DateTime.Now;
-            auctionLot.Status = LotStatus.Sold;
+            auctionLot.Status = LotStatus.Contract;
 
             context.AuctionLots.Update(auctionLot);
             await context.Orders.AddAsync(model);
             await context.SaveChangesAsync();
         }
 
-        public async Task Delete(Order model)
+        public Task Delete(Order model)
         {
             throw new NotImplementedException();
         }
@@ -63,7 +63,7 @@ namespace DataAccessLogic.CrudLogic
                 .ToListAsync();
         }
 
-        public async Task Update(Order model)
+        public Task Update(Order model)
         {
             throw new NotImplementedException();
         }

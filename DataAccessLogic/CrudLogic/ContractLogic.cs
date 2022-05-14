@@ -27,14 +27,40 @@ namespace DataAccessLogic.CrudLogic
             throw new NotImplementedException();
         }
 
-        public Task<List<Contract>> Read(Contract model)
+        public async Task<List<Contract>> Read(Contract model)
         {
-            throw new NotImplementedException();
+            return await context.Contracts
+                .Include(cntr => cntr.Seller)
+                .Include(cntr => cntr.Buyer)
+                .Include(cntr => cntr.AuctionLot)
+                .Where(cntr => 
+                    model == null ||
+                    cntr.Id == model.Id ||
+                    cntr.SellerId == model.SellerId ||
+                    cntr.BuyerId == model.BuyerId
+                )
+                .ToListAsync();
         }
 
-        public Task Update(Contract model)
+        public async Task Update(Contract model)
         {
-            throw new NotImplementedException();
+            if (model == null || string.IsNullOrWhiteSpace(model.Id))
+            {
+                throw new Exception("Контракт не определен");
+            }
+
+            Contract contractToUpdate = await context.Contracts
+                .FirstOrDefaultAsync(cntr => cntr.Id == model.Id);
+
+            if (contractToUpdate == null)
+            {
+                throw new Exception("Контракт не найден");
+            }
+
+            contractToUpdate.Status = model.Status;
+            contractToUpdate.DeliveryInfo = model.DeliveryInfo;
+
+            await context.SaveChangesAsync();
         }
     }
 }

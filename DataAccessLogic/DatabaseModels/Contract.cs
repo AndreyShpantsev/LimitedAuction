@@ -15,6 +15,7 @@ namespace DataAccessLogic.DatabaseModels
         public string AuctionLotId { get; set; }
         public string BuyerId { get; set; }
         public string SellerId { get; set; }
+        public string DeliveryInfo { get; set; }
         public AuctionLot AuctionLot { get; set; }
         public User Buyer { get; set; }
         public User Seller { get; set; }

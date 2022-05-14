@@ -24,6 +24,7 @@ namespace WebApplicationTechSale.Controllers
         private readonly ICrudLogic<AuctionLot> lotLogic;
         private readonly ICrudLogic<Application> appLogic;
         private readonly ICrudLogic<Bid> bidLogic;
+        private readonly ICrudLogic<Contract> contractLogic;
         private readonly IWebHostEnvironment environment;
         private readonly ISavedLogic savedListLogic;
         private readonly UserManager<User> userManager;
@@ -38,7 +39,8 @@ namespace WebApplicationTechSale.Controllers
             ICrudLogic<Bid> bidLogic, 
             ISavedLogic savedListLogic,
             IBot telegramBot, 
-            ICrudLogic<Order> orderLogic
+            ICrudLogic<Order> orderLogic,
+            ICrudLogic<Contract> contractLogic
         )
         {
             this.lotLogic = lotLogic;
@@ -49,6 +51,7 @@ namespace WebApplicationTechSale.Controllers
             this.telegramBot = telegramBot;
             this.orderLogic = orderLogic;
             this.appLogic = appLogic;
+            this.contractLogic = contractLogic;
         }
 
         [HttpGet]
@@ -555,9 +558,29 @@ namespace WebApplicationTechSale.Controllers
                             : ApplicationStatus.Rejected
                     });
                 }
+
+                int acceptedAppsCount = model.AppsForView.Count(app => app.IsAccepted);
+
+                if (acceptedAppsCount < 2)
+                {
+                    await lotLogic.Update(new AuctionLot
+                    {
+                        Id = model.AuctionLotId,
+                        Status = LotStatus.NotHeld
+                    });
+                } 
+                else
+                {
+                    await lotLogic.Update(new AuctionLot
+                    {
+                        Id = model.AuctionLotId,
+                        Status = LotStatus.Published
+                    });
+                }
+
                 return View("Redirect", new RedirectModel
                 {
-                    InfoMessages = RedirectionMessageProvider.ApplicationSended(),
+                    InfoMessages = RedirectionMessageProvider.AppViewResultsSaved(),
                     RedirectUrl = $"/User/OpenLot/{model.AuctionLotId}",
                     SecondsToRedirect = ApplicationConstantsProvider.GetMaxRedirectionTime()
                 });
@@ -566,6 +589,163 @@ namespace WebApplicationTechSale.Controllers
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MyContracts()
+        {
+            string userId = User.Claims
+                .FirstOrDefault(uc => uc.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            List<Contract> userContracts = await contractLogic.Read(new Contract
+            {
+                BuyerId = userId,
+                SellerId = userId
+            });
+
+            return View(userContracts);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> OpenContract(string id)
+        {
+            Contract contractToShow = (await contractLogic.Read(new Contract
+            {
+                Id = id
+            })).FirstOrDefault();
+
+            if (contractToShow == null)
+            {
+                return NotFound();
+            }
+
+            return View(new OpenContractViewModel
+            {
+                AuctionName = contractToShow.AuctionLot.Name,
+                BuyerName = contractToShow.Buyer.UserName,
+                ContractAmount = contractToShow.Amount,
+                ContractId = contractToShow.Id,
+                ContractStatus = contractToShow.Status,
+                SellerName = contractToShow.Seller.UserName,
+                DeliveryInfo = contractToShow.DeliveryInfo
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ContractParticipantSign(string cntrId)
+        {
+            try
+            {
+                await contractLogic.Update(new Contract
+                {
+                    Id = cntrId,
+                    Status = ContractStatus.SellerSigning
+                });
+
+                return View("Redirect", new RedirectModel
+                {
+                    InfoMessages = RedirectionMessageProvider.TestMessage(),
+                    RedirectUrl = $"/User/OpenContract/{cntrId}",
+                    SecondsToRedirect = ApplicationConstantsProvider.GetMaxRedirectionTime()
+                });
+            }
+            catch (Exception ex)
+            {
+                return View("Redirect", new RedirectModel
+                {
+                    InfoMessages = RedirectionMessageProvider.ErrorMessage(ex.Message),
+                    RedirectUrl = $"/User/OpenContract/{cntrId}",
+                    SecondsToRedirect = ApplicationConstantsProvider.GetMaxRedirectionTime()
+                });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ContractSellerSign(string cntrId)
+        {
+            try
+            {
+                await contractLogic.Update(new Contract
+                {
+                    Id = cntrId,
+                    Status = ContractStatus.SellerInfo
+                });
+
+                return View("Redirect", new RedirectModel
+                {
+                    InfoMessages = RedirectionMessageProvider.TestMessage(),
+                    RedirectUrl = $"/User/OpenContract/{cntrId}",
+                    SecondsToRedirect = ApplicationConstantsProvider.GetMaxRedirectionTime()
+                });
+            }
+            catch (Exception ex)
+            {
+                return View("Redirect", new RedirectModel
+                {
+                    InfoMessages = RedirectionMessageProvider.ErrorMessage(ex.Message),
+                    RedirectUrl = $"/User/OpenContract/{cntrId}",
+                    SecondsToRedirect = ApplicationConstantsProvider.GetMaxRedirectionTime()
+                });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ContractSellerInfo(string cntrId, string deliveryInfo)
+        {
+            try
+            {
+                await contractLogic.Update(new Contract
+                {
+                    Id = cntrId,
+                    Status = ContractStatus.ParticipantConfirmation,
+                    DeliveryInfo = deliveryInfo
+                });
+
+                return View("Redirect", new RedirectModel
+                {
+                    InfoMessages = RedirectionMessageProvider.TestMessage(),
+                    RedirectUrl = $"/User/OpenContract/{cntrId}",
+                    SecondsToRedirect = ApplicationConstantsProvider.GetMaxRedirectionTime()
+                });
+            }
+            catch (Exception ex)
+            {
+                return View("Redirect", new RedirectModel
+                {
+                    InfoMessages = RedirectionMessageProvider.ErrorMessage(ex.Message),
+                    RedirectUrl = $"/User/OpenContract/{cntrId}",
+                    SecondsToRedirect = ApplicationConstantsProvider.GetMaxRedirectionTime()
+                });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ContractParticipantConfirmation(string cntrId)
+        {
+            try
+            {
+                await contractLogic.Update(new Contract
+                {
+                    Id = cntrId,
+                    Status = ContractStatus.ConcludeContract
+                });
+
+                return View("Redirect", new RedirectModel
+                {
+                    InfoMessages = RedirectionMessageProvider.TestMessage(),
+                    RedirectUrl = $"/User/OpenContract/{cntrId}",
+                    SecondsToRedirect = ApplicationConstantsProvider.GetMaxRedirectionTime()
+                });
+            }
+            catch (Exception ex)
+            {
+                return View("Redirect", new RedirectModel
+                {
+                    InfoMessages = RedirectionMessageProvider.ErrorMessage(ex.Message),
+                    RedirectUrl = $"/User/OpenContract/{cntrId}",
+                    SecondsToRedirect = ApplicationConstantsProvider.GetMaxRedirectionTime()
+                });
             }
         }
     }

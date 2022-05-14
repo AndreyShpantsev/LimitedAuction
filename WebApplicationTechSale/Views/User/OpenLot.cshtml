@@ -120,20 +120,32 @@
         Model.Status != DataAccessLogic.Enums.LotStatus.Sold
     )
     {
-        <div class="col-lg-4 col-xl-2">
-            <form method="post" asp-action="PlaceBid" asp-controller="User" asp-route-lotId="@Model.Id">
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-lg btn-dark rounded-0">Ставка +@Model.PriceInfo.BidStep руб.</button>
-                </div>
-            </form>
-        </div>
-        <div class="col-lg-4 col-xl-2">
-            <form method="post" asp-action="CreateOrder" asp-controller="User" asp-route-lotId="@Model.Id">
-                <div class="d-grid">
-                    <button id="buy" type="submit" class="btn btn-lg btn-dark rounded-0">Купить @Model.PriceInfo.FinalPrice руб.</button>
-                </div>
-            </form>
-        </div>
+        @if (
+            Model.TypeOfAuction == TypeOfAuction.Open ||
+            (
+                Model.TypeOfAuction == TypeOfAuction.Closed &&
+                Model.Applications.Any(app => 
+                    app.User.UserName == User.Identity.Name && 
+                    app.Status == ApplicationStatus.Accepted
+                )
+            )
+        )
+        {
+            <div class="col-lg-4 col-xl-2">
+                <form method="post" asp-action="PlaceBid" asp-controller="User" asp-route-lotId="@Model.Id">
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-lg btn-dark rounded-0">Ставка +@Model.PriceInfo.BidStep руб.</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-4 col-xl-2">
+                <form method="post" asp-action="CreateOrder" asp-controller="User" asp-route-lotId="@Model.Id">
+                    <div class="d-grid">
+                        <button id="buy" type="submit" class="btn btn-lg btn-dark rounded-0">Купить @Model.PriceInfo.FinalPrice руб.</button>
+                    </div>
+                </form>
+            </div>
+        }
     }
 </div>
 <div class="row justify-content-center">

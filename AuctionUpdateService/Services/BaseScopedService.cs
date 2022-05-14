@@ -10,24 +10,26 @@ namespace AuctionUpdateService.Services
     internal abstract class BaseScopedService : IBaseScopedService
     {
         private readonly ILogger<BaseScopedService> logger;
-        private readonly string cronExp;
 
-        public BaseScopedService(ILogger<BaseScopedService> logger, string cronExp)
+        public BaseScopedService(ILogger<BaseScopedService> logger)
         {
             this.logger = logger;
-            this.cronExp = cronExp;
         }
 
         public abstract Task ExecuteAsync(CancellationToken cancellationToken);
 
         protected async Task WaitForNextSchedule(string cronExpression)
         {
-            var parsedExp = CronExpression.Parse(cronExpression);
-            var currentUtcTime = DateTimeOffset.UtcNow.UtcDateTime;
-            var occurenceTime = parsedExp.GetNextOccurrence(currentUtcTime);
+            CronExpression parsedExp = CronExpression.Parse(cronExpression, CronFormat.IncludeSeconds);
+            DateTime currentUtcTime = DateTimeOffset.UtcNow.UtcDateTime;
+            DateTime? occurenceTime = parsedExp.GetNextOccurrence(currentUtcTime);
 
-            var delay = occurenceTime.GetValueOrDefault().Subtract(currentUtcTime);
-            logger.LogInformation("The run is delayed for {delay}. Current time: {time}", delay, DateTimeOffset.Now);
+            TimeSpan delay = occurenceTime.GetValueOrDefault().Subtract(currentUtcTime);
+
+            logger.LogInformation(
+                "Следующий запуск сервиса в {occurenceTime}", 
+                occurenceTime?.ToLocalTime().ToString("HH:mm:ss")
+            );
 
             await Task.Delay(delay);
         }

@@ -17,11 +17,11 @@ namespace AuctionUpdateService.Services
     {
         private readonly ILogger<RequestDateService> logger;
         private readonly ApplicationContext context;
-        private static readonly string cronExp = "* * * * *";
+        private static readonly string cronExp = "10 * * * * *";
 
         public RequestDateService(
             ILogger<RequestDateService> logger, 
-            ApplicationContext context) : base(logger, cronExp)
+            ApplicationContext context) : base(logger)
         {
             this.logger = logger;
             this.context = context;
@@ -38,7 +38,14 @@ namespace AuctionUpdateService.Services
                     lot.AppStartDate != null && lot.AppEndDate != null && 
                     (
                         (lot.Status == LotStatus.Applications && lot.AppEndDate <= currentDate) || 
-                        (lot.Status == LotStatus.Published && lot.AppStartDate <= currentDate)
+                        (
+                            lot.Status == LotStatus.Published &&
+                            (
+                                lot.AppStartDate <= currentDate ||
+                                lot.AppEndDate <= currentDate
+                            ) &&
+                            !context.Applications.Any(app => app.AuctionLotId == lot.Id)
+                        )
                     )
                     ).ToListAsync();
 
@@ -46,7 +53,23 @@ namespace AuctionUpdateService.Services
                 {
                     if (lot.Status == LotStatus.Applications)
                     {
-                        lot.Status = LotStatus.ApplicationsView;
+                        int appsCount = await GetAppsCount(lot.Id);
+
+                        if (appsCount > 1)
+                        {
+                            lot.Status = LotStatus.ApplicationsView;
+                        }
+                        
+                        if (appsCount == 1)
+                        {
+                            await RejectSingleApp(lot.Id);
+                            lot.Status = LotStatus.NotHeld;
+                        }
+
+                        if (appsCount == 0)
+                        {
+                            lot.Status = LotStatus.NotHeld;
+                        }
                     }
                     if (lot.Status == LotStatus.Published)
                     {
@@ -60,6 +83,26 @@ namespace AuctionUpdateService.Services
             {
                 await tran.RollbackAsync();
                 logger.LogError("Error: {0}", ex.Message);
+            }
+        }
+
+        public async Task<int> GetAppsCount(string auctionLotId)
+        {
+            return await context.Applications
+                .CountAsync(app => app.AuctionLotId == auctionLotId);
+        }
+
+        public async Task RejectSingleApp(string auctionLotId)
+        {
+            Application singleApp = await context.Applications
+                .FirstOrDefaultAsync(app => 
+                    app.AuctionLotId == auctionLotId &&
+                    app.Status == ApplicationStatus.Submitted
+                );
+
+            if (singleApp != null)
+            {
+                singleApp.Status = ApplicationStatus.Rejected;
             }
         }
 

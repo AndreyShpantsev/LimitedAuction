@@ -1,0 +1,131 @@
+﻿@using DataAccessLogic.DatabaseModels;
+@using DataAccessLogic.HelperServices;
+@using DataAccessLogic.Enums;
+
+@model OpenContractViewModel
+
+<div class="row justify-content-center pt-3">
+    <div class="col-lg-10 col-xl-9 d-flex align-items-center">
+        <div class="h4 my-0 pt-3">Просмотр контракта</div>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-9">
+        <div class="card my-3 rounded-0">
+            <div class="card-body">
+                <h4 class="card-title mb-3">Информация о контракте</h4>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <div class="card-text">
+                            <p class="h5">Аукцион:</p>
+                            <p class="mb-0">
+                                @Html.DisplayFor(model => model.AuctionName)
+                            </p>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="card-text">
+                            <p class="h5">Цена контракта:</p>
+                            <p class="mb-0">
+                                @Html.DisplayFor(model => model.ContractAmount) руб.
+                            </p>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="card-text">
+                            <p class="h5">Продавец:</p>
+                            <p class="mb-0">
+                                @Html.DisplayFor(model => model.SellerName)
+                            </p>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="card-text">
+                            <p class="h5">Покупатель:</p>
+                            <p class="mb-0">
+                                @Html.DisplayFor(model => model.BuyerName)
+                            </p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row justify-content-center pb-4">
+    <div class="col-lg-10 col-xl-9">
+        <div class="mb-3">
+            <p class="h5">
+                <b>Статус контракта:</b>
+                @ContractStatusProvider.GetStatusOnRussian(@Model.ContractStatus)
+            </p>
+        </div>
+        @if (
+            Model.ContractStatus == ContractStatus.PatricipantSigning &&
+            Model.BuyerName == User.Identity.Name
+        )
+        {
+            <form method="post" asp-action="ContractParticipantSign" asp-controller="User" asp-route-cntrId="@Model.ContractId">
+                <div class="d-grid">
+                    <button id="buy" type="submit" class="btn btn-lg btn-dark rounded-0">
+                        Подписать
+                    </button>
+                </div>
+            </form>
+        }
+        @if (
+            Model.ContractStatus == ContractStatus.SellerSigning &&
+            Model.SellerName == User.Identity.Name
+        )
+        {
+            <form method="post" asp-action="ContractSellerSign" asp-controller="User" asp-route-cntrId="@Model.ContractId">
+                <div class="d-grid">
+                    <button id="buy" type="submit" class="btn btn-lg btn-dark rounded-0">
+                        Подписать
+                    </button>
+                </div>
+            </form>
+        }
+        @if (
+            Model.ContractStatus == ContractStatus.SellerInfo &&
+            Model.SellerName == User.Identity.Name
+        )
+        {
+            <form method="post" asp-action="ContractSellerInfo" asp-controller="User">
+                <div class="mb-3">
+                    <input type="hidden" name="cntrId" value="@Model.ContractId"/>
+                    <div class="form-group">
+                        <p class="h5">
+                            <b>Информация о доставке:</b>
+                        </p>
+                        <textarea class="form-control" id="deliveryInfo" name="deliveryInfo" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="d-grid">
+                    <button id="buy" type="submit" class="btn btn-lg btn-dark rounded-0">
+                        Сохранить информацию о доставке
+                    </button>
+                </div>
+            </form>
+        }
+        @if (
+            Model.ContractStatus == ContractStatus.ParticipantConfirmation &&
+            Model.BuyerName == User.Identity.Name
+        )
+        {
+             <form method="post" asp-action="ContractParticipantConfirmation" asp-controller="User" asp-route-cntrId="@Model.ContractId">
+                <div class="mb-3">
+                    <p class="h5">
+                        <b>Информация о доставке: </b>
+                        @Html.DisplayFor(cntr => cntr.DeliveryInfo)
+                    </p>
+                </div>
+                <div class="d-grid">
+                    <button id="buy" type="submit" class="btn btn-lg btn-dark rounded-0">
+                        Подтвердить получение товара
+                    </button>
+                </div>
+            </form>
+        }
+    </div>
+</div>

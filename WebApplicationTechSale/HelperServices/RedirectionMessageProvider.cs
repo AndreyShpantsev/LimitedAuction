@@ -131,5 +131,21 @@ namespace WebApplicationTechSale.HelperServices
                 "чьи заявки были приняты, смогут делать ставки на Ваш лот"
             };
         }
+
+        public static List<string> TestMessage()
+        {
+            return new List<string>()
+            {
+                "Успешно"
+            };
+        }
+
+        public static List<string> ErrorMessage(string err)
+        {
+            return new List<string>()
+            {
+                $"Ошибка: {err}"
+            };
+        }
     }
 }
