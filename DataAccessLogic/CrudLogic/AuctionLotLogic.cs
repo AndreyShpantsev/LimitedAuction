@@ -160,24 +160,50 @@ namespace DataAccessLogic.CrudLogic
 
         public async Task<List<AuctionLot>> GetPage(int pageNumber, AuctionLot model)
         {
-            return await context.AuctionLots.Include(lot => lot.User).Include(lot =>
-            lot.PriceInfo).Where(lot => model == null
-            || (model.Status != null && lot.Status == model.Status)
-            || (model.Status == LotStatus.Published && lot.Status == LotStatus.Applications)
-            || (model.User != null && lot.User == model.User))
-            .OrderByDescending(lot => lot.StartDate)
-            .Skip((pageNumber <= 0 ? 0 : pageNumber - 1) *
-            ApplicationConstantsProvider.GetPageSize())
-            .Take(ApplicationConstantsProvider.GetPageSize())
-            .ToListAsync();
+            return await context.AuctionLots
+                .Include(lot => lot.User)
+                .Include(lot => lot.PriceInfo)
+                .Where(lot => 
+                    (
+                        model == null && 
+                        (
+                            lot.Status == LotStatus.Active || 
+                            lot.Status == LotStatus.Applications ||
+                            lot.Status == LotStatus.Published
+                        )
+                    ) ||
+                    model != null &&
+                    (
+                        (model.Status != null && lot.Status == model.Status) ||
+                        (model.User != null && lot.User == model.User))
+                    )
+                .OrderByDescending(lot => lot.Status)
+                .ThenByDescending(lot => lot.AppStartDate ?? lot.StartDate)
+                .Skip(
+                    (pageNumber <= 0 ? 0 : pageNumber - 1) * 
+                    ApplicationConstantsProvider.GetPageSize())
+                .Take(ApplicationConstantsProvider.GetPageSize())
+                .ToListAsync();
         }
 
         public async Task<int> GetCount(AuctionLot model)
         {
-            return await context.AuctionLots.CountAsync(lot => model == null 
-            || (model.Status != null && lot.Status == model.Status)
-            || (model.Status == LotStatus.Published && lot.Status == LotStatus.Applications)
-            || (model.User != null && lot.User == model.User));
+            return await context.AuctionLots
+                .CountAsync(lot => 
+                    (
+                        model == null &&
+                        (
+                            lot.Status == LotStatus.Active ||
+                            lot.Status == LotStatus.Applications ||
+                            lot.Status == LotStatus.Published
+                        )
+                    ) ||
+                    model != null &&
+                    (
+                        (model.Status != null && lot.Status == model.Status) ||
+                        (model.User != null && lot.User == model.User)
+                    )
+                );
         }
     }
 }

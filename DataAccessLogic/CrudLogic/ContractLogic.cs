@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 namespace DataAccessLogic.CrudLogic
 {
-    internal class ContractLogic : ICrudLogic<Contract>
+    public class ContractLogic : ICrudLogic<Contract>
     {
         private readonly ApplicationContext context;
 

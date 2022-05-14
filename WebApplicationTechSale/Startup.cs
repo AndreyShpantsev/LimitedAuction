@@ -35,6 +35,8 @@ namespace WebApplicationTechSale
             services.AddTransient<ICrudLogic<Bid>, BidLogic>();
             services.AddTransient<ICrudLogic<Account>, AccountLogic>();
             services.AddTransient<ICrudLogic<Transaction>, TransactionLogic>();
+            services.AddTransient<ICrudLogic<Application>, ApplicationLogic>();
+            services.AddTransient<ICrudLogic<Contract>, ContractLogic>();
             services.AddTransient<ISavedLogic, SavedListLogic>();
             services.AddTransient<IPagination<AuctionLot>, AuctionLotLogic>();
             services.AddSingleton<IBot, TechSaleBot>(bot => new TechSaleBot(Configuration["BotTokenAzure"]));

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using TechSaleTelegramBot;
 using WebApplicationTechSale.HelperServices;
@@ -21,6 +22,7 @@ namespace WebApplicationTechSale.Controllers
     public class UserController : Controller
     {
         private readonly ICrudLogic<AuctionLot> lotLogic;
+        private readonly ICrudLogic<Application> appLogic;
         private readonly ICrudLogic<Bid> bidLogic;
         private readonly IWebHostEnvironment environment;
         private readonly ISavedLogic savedListLogic;
@@ -28,9 +30,16 @@ namespace WebApplicationTechSale.Controllers
         private readonly IBot telegramBot;
         private readonly ICrudLogic<Order> orderLogic;
 
-        public UserController(ICrudLogic<AuctionLot> lotLogic, IWebHostEnvironment environment,
-            UserManager<User> userManager, ICrudLogic<Bid> bidLogic, ISavedLogic savedListLogic,
-            IBot telegramBot, ICrudLogic<Order> orderLogic)
+        public UserController(
+            ICrudLogic<Application> appLogic,
+            ICrudLogic<AuctionLot> lotLogic, 
+            IWebHostEnvironment environment,
+            UserManager<User> userManager, 
+            ICrudLogic<Bid> bidLogic, 
+            ISavedLogic savedListLogic,
+            IBot telegramBot, 
+            ICrudLogic<Order> orderLogic
+        )
         {
             this.lotLogic = lotLogic;
             this.environment = environment;
@@ -39,6 +48,7 @@ namespace WebApplicationTechSale.Controllers
             this.savedListLogic = savedListLogic;
             this.telegramBot = telegramBot;
             this.orderLogic = orderLogic;
+            this.appLogic = appLogic;
         }
 
         [HttpGet]
@@ -403,6 +413,70 @@ namespace WebApplicationTechSale.Controllers
             {
                 InfoMessages = RedirectionMessageProvider.OrderCreateMessage(),
                 RedirectUrl = "/Account/MyOrders",
+                SecondsToRedirect = ApplicationConstantsProvider.GetShortRedirectionTime()
+            });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SendApp(string lotId)
+        {
+            AuctionLot auctionLot = (await lotLogic.Read(new AuctionLot
+            {
+                Id = lotId
+            })).FirstOrDefault();
+
+            if (
+                auctionLot == null || 
+                auctionLot.TypeOfAuction != TypeOfAuction.Closed
+            )
+            {
+                return NotFound();
+            }
+
+            return View(new SendAppViewModel
+            {
+                AuctionLotId = auctionLot.Id,
+                Seller = auctionLot.User.UserName,
+                AppEndDate = auctionLot.AppEndDate.Value,
+                AppStartDate = auctionLot.AppStartDate.Value,
+                AuctionDescription = auctionLot.Description,
+                AuctionEndDate = auctionLot.EndDate,
+                AuctionName = auctionLot.Name,
+                AuctionStartDate = auctionLot.StartDate,
+                RulesIsAccepted = false,
+                StartPrice = auctionLot.PriceInfo.StartPrice
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SendApp(SendAppViewModel model)
+        {
+            if (!model.RulesIsAccepted)
+            {
+                ModelState.AddModelError(string.Empty, "Необходимо принять условия");
+                return View(model);
+            }
+            try
+            {
+                string userId = User.Claims
+                    .FirstOrDefault(uc => uc.Type == ClaimTypes.NameIdentifier)?.Value;
+
+                await appLogic.Create(new Application
+                {
+                    UserId = userId,
+                    AuctionLotId = model.AuctionLotId
+                });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
+            return View("Redirect", new RedirectModel
+            {
+                InfoMessages = RedirectionMessageProvider.ApplicationSended(),
+                RedirectUrl = $"/User/OpenLot/{model.AuctionLotId}",
                 SecondsToRedirect = ApplicationConstantsProvider.GetShortRedirectionTime()
             });
         }

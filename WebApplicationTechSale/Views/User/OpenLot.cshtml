@@ -1,5 +1,6 @@
 ﻿@using DataAccessLogic.DatabaseModels;
 @using DataAccessLogic.HelperServices;
+@using DataAccessLogic.Enums;
 
 @model AuctionLot
 
@@ -7,7 +8,7 @@
     <div class="col-lg-10 col-xl-9 d-flex align-items-center">
         <div class="h4 my-0 py-3">@Model.Name</div>
     </div>
-    @if (User.Identity.Name != Model.User.UserName && Model.Status != DataAccessLogic.Enums.LotStatus.Sold)
+    @if (User.Identity.Name != Model.User.UserName && Model.Status != LotStatus.Sold)
     {
         if (ViewBag.IsSaved)
         {
@@ -41,7 +42,7 @@
 <div class="row justify-content-center mt-4">
     <div class="col-lg-6 col-xl-5">
         <div class="row mb-4 mb-xl-0 h-100">
-            @if (DateTime.Now < Model.StartDate)
+            @if (Model.Status == LotStatus.Published)
             {
                 <div class="col-sm-7 d-flex align-items-center">
                     <h5>Начало: <span>@Model.StartDate.ToString("dd.MM.yy")</span></h5>
@@ -50,7 +51,7 @@
                     <h5>Старт: <span>@Model.PriceInfo.StartPrice</span> руб.</h5>
                 </div>
             }
-            else if (DateTime.Now > Model.StartDate && DateTime.Now < Model.EndDate)
+            @if (Model.Status == LotStatus.Active)
             {
                 <div class="col-sm-7 d-flex align-items-center">
                     <h5>До конца: <span id="timeLeft"></span></h5>
@@ -59,7 +60,13 @@
                     <h5>Ставка: <span>@Model.PriceInfo.CurrentPrice</span> руб.</h5>
                 </div>
             }
-            else
+            @if (Model.Status == LotStatus.Applications)
+            {
+                <div class="d-flex align-items-center">
+                    <h5>До окончания подачи заявок: <span id="timeLeft"></span></h5>
+                </div>
+            }
+            @if (Model.Status == LotStatus.Sold)
             {
                 if (Model.Bids.Count > 0 && Model.Bids.First().User.UserName == User.Identity.Name
                 && Model.Status != DataAccessLogic.Enums.LotStatus.Sold)
@@ -80,22 +87,37 @@
             }
         </div>
     </div>
-    @if (Model.Status == DataAccessLogic.Enums.LotStatus.ApplicationsView && User.Identity.Name == Model.User.UserName)
+    @if (
+        Model.Status == LotStatus.ApplicationsView && 
+        User.Identity.Name == Model.User.UserName
+    )
     {
         <div class="col-lg-4 col-xl-3">
-            <a class="btn btn-lg btn-dark rounded-0 d-block">Рассмотреть заявки</a>
+            <a asp-action="ViewApps" 
+                asp-controller="User" 
+                asp-route-lotId="@Model.Id"
+                class="btn btn-lg btn-dark rounded-0 d-block"
+            >Рассмотреть заявки</a>
         </div>
     }
-    else if (Model.Status == DataAccessLogic.Enums.LotStatus.Applications)
+    @if (
+        Model.Status == DataAccessLogic.Enums.LotStatus.Applications &&
+        User.Identity.Name != Model.User.UserName
+    )
     {
         <div class="col-lg-4 col-xl-3">
-            <a class="btn btn-lg btn-dark rounded-0 d-block">Подать заявку</a>
+            <a asp-action="SendApp" 
+                asp-controller="User"
+                asp-route-lotId="@Model.Id"
+                class="btn btn-lg btn-dark rounded-0 d-block"
+            >Подать заявку</a>
         </div>
     }
-    else if (DateTime.Now > Model.StartDate
-    && DateTime.Now < Model.EndDate
-    && User.Identity.Name != Model.User.UserName
-    && Model.Status != DataAccessLogic.Enums.LotStatus.Sold)
+    @if (
+        Model.Status == LotStatus.Active &&
+        User.Identity.Name != Model.User.UserName &&
+        Model.Status != DataAccessLogic.Enums.LotStatus.Sold
+    )
     {
         <div class="col-lg-4 col-xl-2">
             <form method="post" asp-action="PlaceBid" asp-controller="User" asp-route-lotId="@Model.Id">
@@ -154,7 +176,10 @@
         </div>
     </div>
 </div>
-@if (DateTime.Now > Model.StartDate && Model.Bids.Count > 0)
+@if (
+    (Model.Status == LotStatus.Active || Model.Status == LotStatus.Sold)
+    && Model.Bids.Count > 0
+)
 {
     <div class="row justify-content-center">
         <div class="col-lg-10 col-xl-9">
@@ -190,11 +215,17 @@
     </div>
 }
 
-@if (DateTime.Now > Model.StartDate && DateTime.Now < Model.EndDate)
+@if (Model.Status == LotStatus.Applications || Model.Status == LotStatus.Active)
 {
     @section Scripts {
         <script>
-            let timeLeft = @Math.Round((Model.EndDate - DateTime.Now).TotalSeconds);
+            let timeLeft = 
+            @if (Model.Status == LotStatus.Applications) {
+                @Math.Round((Model.AppEndDate.Value - DateTime.Now).TotalSeconds);
+            }
+            @if (Model.Status == LotStatus.Active) {
+                @Math.Round((Model.EndDate - DateTime.Now).TotalSeconds);
+            }
 
             function Timer() {
 

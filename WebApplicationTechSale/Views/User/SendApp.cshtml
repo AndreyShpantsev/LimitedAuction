@@ -1,0 +1,103 @@
+﻿@using DataAccessLogic.DatabaseModels;
+@using DataAccessLogic.HelperServices;
+@using DataAccessLogic.Enums;
+
+@model SendAppViewModel
+
+<div class="row justify-content-center pt-3">
+    <div class="col-lg-10 col-xl-9 d-flex align-items-center">
+        <div class="h4 my-0 pt-3">Подача заявки на участие в аукционе</div>
+    </div>
+</div>
+<form method="post" asp-action="SendApp" asp-controller="User">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9">
+            <div class="card my-3 rounded-0">
+                <div class="card-body">
+                    <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+                    @Html.HiddenFor(model => model.AuctionLotId)
+                    <h4 class="card-title mb-3">Информация о лоте</h4>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <div class="card-text">
+                                <p class="h5">Продавец:</p>
+                                <p class="mb-0">
+                                    @Html.DisplayFor(model => model.Seller)
+                                </p>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="card-text">
+                                <p class="h5">Название:</p>
+                                <p class="mb-0">
+                                    @Html.DisplayFor(model => model.AuctionName)
+                                </p>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="card-text">
+                                <p class="h5">Описание:</p>
+                                <p class="mb-0">
+                                    @Html.DisplayFor(model => model.AuctionDescription)
+                                </p>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="card-text">
+                                <p class="h5">Начальная цена:</p>
+                                <p class="mb-0">
+                                    @Html.DisplayFor(model => model.StartPrice) руб.
+                                </p>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="card-text">
+                                <p class="h5">Дата начала подачи заявок:</p>
+                                <p class="mb-0">
+                                    @Html.DisplayFor(model => model.AppStartDate)
+                                </p>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="card-text">
+                                <p class="h5">Дата окончания подачи заявок:</p>
+                                <p class="mb-0">
+                                    @Html.DisplayFor(model => model.AppEndDate)
+                                </p>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="card-text">
+                                <p class="h5">Дата начала торгов:</p>
+                                <p class="mb-0">
+                                    @Html.DisplayFor(model => model.AuctionStartDate)
+                                </p>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="card-text">
+                                <p class="h5">Дата окончания торгов:</p>
+                                <p class="mb-0">
+                                    @Html.DisplayFor(model => model.AuctionEndDate)
+                                </p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center pb-4">
+        <div class="col-lg-10 col-xl-9">
+            <div class="form-check mb-3">
+                <label asp-for="RulesIsAccepted" class="form-check-label"></label>
+                <input asp-for="RulesIsAccepted" class="form-check-input rounded-0">
+            </div>
+            <div class="d-grid">
+                <button id="buy" type="submit" class="btn btn-lg btn-dark rounded-0">
+                    Подать заявку на участие
+                </button>
+            </div>
+        </div>
+    </div>
+</form>

@@ -30,15 +30,9 @@ namespace WebApplicationTechSale.Controllers
         [HttpGet]
         public async Task<IActionResult> Lots(int page = 1)
         {
-            List<AuctionLot> lotsToDisplay = await lotLogic.GetPage(page, new AuctionLot
-            {
-                Status = LotStatus.Published
-            });
+            List<AuctionLot> lotsToDisplay = await lotLogic.GetPage(page, null);
 
-            int lotsCount = await lotLogic.GetCount(new AuctionLot
-            {
-                Status = LotStatus.Published
-            });
+            int lotsCount = await lotLogic.GetCount(null);
 
             return View(new AuctionLotsViewModel()
             {

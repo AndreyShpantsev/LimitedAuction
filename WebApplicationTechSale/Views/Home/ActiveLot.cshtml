@@ -1,9 +1,16 @@
 ﻿@using DataAccessLogic.DatabaseModels
+@using DataAccessLogic.HelperServices
+@using DataAccessLogic.Enums
 
 @model AuctionLot
 
 <div class="col">
     <div class="card h-100 rounded-0">
+        <div class="card-header text-center bg-white">
+            <h5 class="py-0 my-0">
+                @LotStatusProvider.GetStatusOnRussian(Model.Status)
+            </h5>
+        </div>
         <img src="@Model.PhotoSrc" class="card-img-top list-lot rounded-0" alt="...">
         <div class="card-body">
             <a class="auction-link" asp-action="OpenLot" asp-controller="User" asp-route-id="@Model.Id">
@@ -11,9 +18,22 @@
             </a>
             <p class="card-text text-wrap">@Model.Description</p>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item"><b>До конца: </b><span class="active-lot">@Math.Round((Model.EndDate - DateTime.Now).TotalSeconds)</span></li>
-                <li class="list-group-item"><b>Текущая цена: </b>@Model.PriceInfo.CurrentPrice руб.</li>
-                <li class="list-group-item"><b>Конечная цена: </b>@Model.PriceInfo.FinalPrice руб.</li>
+                @if (Model.Status == LotStatus.Applications)
+                {
+                    <li class="list-group-item">
+                        <b>До окончания подачи заявок: </b>
+                        <span class="active-lot">
+                            @Math.Round((Model.AppEndDate.Value - DateTime.Now).TotalSeconds)
+                        </span>
+                    </li>
+                    
+                }
+                @if (Model.Status == LotStatus.Active)
+                {
+                    <li class="list-group-item"><b>До окончания торгов: </b><span class="active-lot">@Math.Round((Model.EndDate - DateTime.Now).TotalSeconds)</span></li>
+                    <li class="list-group-item"><b>Текущая цена: </b>@Model.PriceInfo.CurrentPrice руб.</li>
+                    <li class="list-group-item"><b>Конечная цена: </b>@Model.PriceInfo.FinalPrice руб.</li>                    
+                }
                 <li class="list-group-item"><b>Продавец: </b>@Model.User.UserName</li>
             </ul>
         </div>

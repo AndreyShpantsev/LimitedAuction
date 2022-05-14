@@ -1,4 +1,5 @@
 ﻿@using DataAccessLogic.DatabaseModels;
+@using DataAccessLogic.Enums;
 
 @model AuctionLotsViewModel
 
@@ -11,17 +12,13 @@
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 my-lg-2">
     @foreach (AuctionLot auctionLot in Model.AuctionLots)
     {
-        @if (DateTime.Now > auctionLot.StartDate && DateTime.Now < auctionLot.EndDate)
+        @if (auctionLot.Status == LotStatus.Applications || auctionLot.Status == LotStatus.Active)
         {
             await Html.RenderPartialAsync("ActiveLot", auctionLot);
         }
-        else if (DateTime.Now < auctionLot.StartDate)
+        else if (auctionLot.Status == LotStatus.Published)
         {
             await Html.RenderPartialAsync("NotStartedLot", auctionLot);
-        }
-        else
-        {
-            await Html.RenderPartialAsync("EndedLot", auctionLot);
         }
     }
 </div>

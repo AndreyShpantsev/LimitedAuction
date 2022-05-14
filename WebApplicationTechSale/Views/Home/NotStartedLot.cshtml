@@ -1,9 +1,15 @@
 ﻿@using DataAccessLogic.DatabaseModels
+@using DataAccessLogic.HelperServices
 
 @model AuctionLot
 
 <div class="col">
     <div class="card h-100 rounded-0">
+        <div class="card-header text-center bg-white">
+            <h5 class="py-0 my-0">
+                @LotStatusProvider.GetStatusOnRussian(Model.Status)
+            </h5>
+        </div>
         <img src="@Model.PhotoSrc" class="card-img-top list-lot rounded-0" alt="...">
         <div class="card-body">
             <a class="auction-link" asp-action="OpenLot" asp-controller="User" asp-route-id="@Model.Id">
