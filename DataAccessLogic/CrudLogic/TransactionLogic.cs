@@ -32,8 +32,9 @@ namespace DataAccessLogic.CrudLogic
                 acc.Id == model.DTAccountId);
                 Account accountCT = await context.Accounts.FirstOrDefaultAsync(acc =>
                 acc.Id == model.CTAccountId);
+                decimal am = model.Amount * -1;
 
-                if (accountDT == null || accountCT == null)
+                if (accountDT == null || accountCT == null || accountCT.Balance < am)
                 {
                     throw new Exception();
                 }

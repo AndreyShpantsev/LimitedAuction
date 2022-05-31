@@ -4,7 +4,7 @@
 @model WebApplicationTechSale.Models.PersonalAccountViewModel
 
 @{
-    ViewData["Title"] = "Список лотов";
+    ViewData["Title"] = "Личный кабинет";
 }
 
 @addTagHelper *, WebApplicationTechSale
@@ -16,9 +16,6 @@
         {
             <p>
                 <a asp-action="Update" asp-controller="Account" class="btn btn-lg btn-dark d-block rounded-0">Изменить учетные данные</a>
-            </p>
-            <p>
-                <a asp-action="MyOrders" asp-controller="User" class="btn btn-lg btn-dark d-block rounded-0">Мои покупки</a>
             </p>
             <p>
                 <a asp-action="MyAppList" asp-controller="User" class="btn btn-lg btn-dark d-block rounded-0">Мои заявки</a>

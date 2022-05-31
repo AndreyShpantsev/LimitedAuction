@@ -147,5 +147,14 @@ namespace WebApplicationTechSale.HelperServices
                 $"Ошибка: {err}"
             };
         }
+
+        public static List<string> ErrorWithdrawMessage()
+        {
+            return new List<string>()
+            {
+                "Заявка на вывод средств отклонена",
+                "На Вашем балансе недостаточно средств!"
+            };
+        }
     }
 }

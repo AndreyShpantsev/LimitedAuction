@@ -2,6 +2,8 @@
 
 @model SavedList
 
+@{ ViewData["Title"] = "Избранное"; }
+
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 my-lg-2">
     @foreach (AuctionLot auctionLot in Model.AuctionLots)
     {

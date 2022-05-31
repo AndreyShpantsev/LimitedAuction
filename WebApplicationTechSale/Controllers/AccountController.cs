@@ -425,24 +425,37 @@ namespace WebApplicationTechSale.Controllers
         [HttpPost]
         public async Task<IActionResult> MakeWithdraw(MakeTransactionViewModel makeTransactionViewModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                await transactionLogic.Create(new Transaction
+                if (ModelState.IsValid)
                 {
-                    Amount = -1 * makeTransactionViewModel.Amount,
-                    Comment = "Вывод средств на банковскую карту",
-                    CTAccountId = makeTransactionViewModel.CtAccountId,
-                    DTAccountId = makeTransactionViewModel.DtAccountId,
-                });
+                    await transactionLogic.Create(new Transaction
+                    {
+                        Amount = -1 * makeTransactionViewModel.Amount,
+                        Comment = "Вывод средств на банковскую карту",
+                        CTAccountId = makeTransactionViewModel.CtAccountId,
+                        DTAccountId = makeTransactionViewModel.DtAccountId,
+                    });
 
+                    return View("Redirect", new RedirectModel
+                    {
+                        InfoMessages = RedirectionMessageProvider.SuccessWithdrawMessage(),
+                        RedirectUrl = "/Account/Money",
+                        SecondsToRedirect = ApplicationConstantsProvider.GetShortRedirectionTime()
+                    });
+                }
+                return View(makeTransactionViewModel);
+            }
+            catch
+            {
                 return View("Redirect", new RedirectModel
                 {
-                    InfoMessages = RedirectionMessageProvider.SuccessDepositMessage(),
-                    RedirectUrl = "/Account/Money",
+                    InfoMessages = RedirectionMessageProvider.ErrorWithdrawMessage(),
+                    RedirectUrl = $"/Account/Money",
                     SecondsToRedirect = ApplicationConstantsProvider.GetShortRedirectionTime()
                 });
             }
-            return View(makeTransactionViewModel);
+            
         }
     }
 }
