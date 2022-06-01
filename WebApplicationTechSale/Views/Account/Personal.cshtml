@@ -24,7 +24,7 @@
                 <a asp-action="MyContracts" asp-controller="User" class="btn btn-lg btn-dark d-block rounded-0">Мои контракты</a>
             </p>
         }
-        @if (User.IsInRole("regular user") || User.IsInRole("admin"))
+        @if (User.IsInRole("regular user"))
         {
             <p>
                 <a asp-action="Money" asp-controller="Account" class="btn btn-lg btn-dark d-block rounded-0">Операции со счетом</a>

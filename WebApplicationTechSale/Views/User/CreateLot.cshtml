@@ -62,12 +62,6 @@
                             <span class="text-danger" asp-validation-for="FinalPrice"></span>
                         </div>
                         <div class="mb-3">
-                            <label asp-for="PercentBid" class="form-label"></label>
-                            <input asp-for="PercentBid" class="form-control rounded-0" type="number" min="0">
-                            <div class="form-text">Укажите значение от 1 до 50 или оставьте поле пустым</div>
-                            <span class="text-danger" asp-validation-for="PercentBid"></span>
-                        </div>
-                        <div class="mb-3">
                             <label asp-for="StartDate" class="form-label"></label>
                             <input asp-for="StartDate" class="form-control rounded-0" type="date" min="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")">
                             <span class="text-danger" asp-validation-for="StartDate"></span>
